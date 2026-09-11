@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button";
+import Loading from "./loading";
+import GlobalError from "./error";
 
 export default function Home() {
   return (
