@@ -9,7 +9,7 @@ export default function NotFound() {
       {/* Background Illustration */}
       <div className="absolute inset-0">
         <Image
-          src="/not-found.png"
+          src="/not-found-page-bg.png"
           alt=""
           fill
           priority
