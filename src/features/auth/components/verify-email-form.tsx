@@ -5,13 +5,18 @@ import { ArrowLeft, MailCheck } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useVerifyEmail } from "../hooks";
 import { Spinner } from "@/components/ui/spinner";
@@ -22,16 +27,10 @@ const VerifyEmailForm = () => {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
   const [otp, setOtp] = useState("");
-  const router = useRouter();
   const [isInvalid, setIsInvalid] = useState(false);
-  const {mutate: verify, isPending: verifyPending} = useVerifyEmail();
+  const { mutate: verify, isPending: verifyPending } = useVerifyEmail();
+  const router = useRouter();
 
-  useEffect(() => {
-    if (!email) {
-      router.push("/");
-    }
-    return;
-  }, [email, router]);
 
   const handleOTP = () => {
     if (otp.length !== 6) {
@@ -63,6 +62,8 @@ const VerifyEmailForm = () => {
       },
     });
   };
+
+  
 
   return (
     <div className="w-full">
@@ -145,7 +146,14 @@ const VerifyEmailForm = () => {
         disabled={verifyPending}
         className="mt-7 h-11 w-full shadow-lg shadow-primary/15 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl"
       >
-        {verifyPending ? <> <Spinner/> Verifying... </> : "Verify email"}
+        {verifyPending ? (
+          <>
+            {" "}
+            <Spinner /> Verifying...{" "}
+          </>
+        ) : (
+          "Verify email"
+        )}
       </Button>
 
       {/* Resend */}

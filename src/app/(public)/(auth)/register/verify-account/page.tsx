@@ -1,11 +1,23 @@
 import Logo from "@/assets/logo/Logo";
 import BackgroundDecoration from "@/components/shared/background-decoration";
 import VerifyEmailForm from "@/features/auth/components/verify-email-form";
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
-export default function VerifyEmailPage() {
+export default async function VerifyEmailPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ email?: string }>;
+}) {
+  const { email } = await searchParams;
+
+  if (!email) {
+    redirect("/");
+  }
+  
   return (
     <main className="relative min-h-svh overflow-hidden bg-background">
-      <BackgroundDecoration/>
+      <BackgroundDecoration />
 
       <div className="container-app relative flex min-h-svh flex-col">
         {/* Header */}
@@ -17,7 +29,9 @@ export default function VerifyEmailPage() {
         <div className="flex flex-1 items-center justify-center py-8 sm:py-10">
           <div className="w-full max-w-md">
             <div className="rounded-2xl border bg-card p-6 shadow-xl shadow-primary/5 sm:p-8 lg:p-10">
-              <VerifyEmailForm />
+              <Suspense fallback={<>Loading...</>}>
+                <VerifyEmailForm />
+              </Suspense>
             </div>
           </div>
         </div>
