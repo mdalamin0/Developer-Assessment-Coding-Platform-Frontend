@@ -45,9 +45,9 @@ export default function LoginPage() {
         <div className="flex flex-1 items-center justify-center py-5 sm:py-6 lg:py-7">
           <div className="w-full max-w-5xl">
             <div className="overflow-hidden rounded-2xl border bg-card shadow-xl shadow-primary/5">
-              <div className="grid md:grid-cols-2">
+              <div className="grid md:min-h-[570px] md:grid-cols-2">
                 {/* LEFT SIDE — IMAGE */}
-                <div className="relative hidden min-h-[540px] overflow-hidden bg-primary/[0.035] md:block lg:min-h-[570px]">
+                <div className="relative hidden min-h-[570px] overflow-hidden bg-primary/[0.035] md:block">
                   {/* Soft center glow */}
                   <div className="absolute left-1/2 top-[40%] size-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl lg:size-[360px]" />
 
@@ -57,10 +57,8 @@ export default function LoginPage() {
                   <div className="absolute -bottom-32 -right-32 size-80 rounded-full border border-primary/10" />
 
                   {/* Illustration */}
-                  <div
-                    className="absolute inset-x-0 -top-14 -left-4 flex justify-center px- pt- sm:px- sm:pt- lg:px- lg:pt-"
-                  >
-                    <div className=" relative aspect-square w-full max-w-[500px]">
+                  <div className="absolute inset-x-0 -top-14 -left-4 flex justify-center px- pt- sm:px- sm:pt- lg:px- lg:pt-">
+                    <div className=" relative aspect-square w-full max-w-[600px]">
                       <Image
                         src="/auth-image.png"
                         alt="Login Image"
@@ -70,6 +68,29 @@ export default function LoginPage() {
                         sizes=" (min-width: 1024px) 390px, (min-width: 768px) 350px, 100vw"
                         className="object-contain"
                       />
+                    </div>
+                  </div>
+                  {/* Platform highlights */}
+                  <div className="absolute inset-x-0 top-[55%] px-8 lg:px-10">
+                    <div className="mx-auto max-w-md">
+                      <div className="mb-4 h-px bg-border/60" />
+
+                      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1.5">
+                          <span className="size-2 rounded-full bg-chart-3" />
+                          Timed assessments
+                        </span>
+
+                        <span className="flex items-center gap-1.5">
+                          <span className="size-2 rounded-full bg-primary" />
+                          Skill evaluation
+                        </span>
+
+                        <span className="flex items-center gap-1.5">
+                          <span className="size-2 rounded-full bg-chart-2" />
+                          Secure submissions
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -95,8 +116,8 @@ export default function LoginPage() {
                 </div>
 
                 {/* RIGHT SIDE — LOGIN FORM */}
-                <div className=" min-h-[540px] p-6 sm:p-8 lg:min-h-[570px] lg:p-10">
-                  <LoginForm  />
+                <div className="flex min-h-[700px] items-center p-6 pt-10 sm:p-8 lg:p-10">
+                  <LoginForm />
                 </div>
               </div>
             </div>

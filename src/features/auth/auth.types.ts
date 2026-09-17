@@ -1,1 +1,14 @@
 export type LoginRole = "CANDIDATE" | "RECRUITER";
+
+export interface RegisterUserPayload {
+  name: string;
+  email: string;
+  password: string;
+  role: "CANDIDATE" | "RECRUITER";
+}
+
+export interface LoginUserPayload {
+  email: string;
+  password: string;
+}
+

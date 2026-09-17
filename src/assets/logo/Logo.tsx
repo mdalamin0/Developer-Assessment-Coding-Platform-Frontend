@@ -1,24 +1,29 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Logo() {
   return (
-    <Link href="/" className="inline-flex items-center gap-1 group">
-      <div className="flex-shrink-0">
+    <Link
+      href="/"
+      className="group inline-flex min-w-0 items-center gap-1.5 sm:gap-2"
+    >
+      <div className="shrink-0">
         <Image
           src="/logo-icon.png"
           alt="DevAssess Logo Icon"
           width={80}
           height={80}
-          className="object-contain"
+          priority
+          className="size-10 object-contain sm:size-12 lg:size-14"
         />
       </div>
 
-      <div className="flex flex-col justify-center">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 leading-none">
+      <div className="flex min-w-0 flex-col justify-center">
+        <h1 className="text-xl font-bold leading-none tracking-tight text-gray-900 sm:text-2xl lg:text-3xl">
           Dev<span className="text-indigo-500">Assess</span>
         </h1>
-        <p className="text-sm font-medium tracking-wide text-gray-400 mt-1 whitespace-nowrap">
+
+        <p className="mt-0.5  whitespace-nowrap text-[10px] font-medium tracking-wide text-gray-400  lg:text-sm">
           Developer Assessment Platform
         </p>
       </div>
