@@ -1,5 +1,5 @@
 import apiClient from "@/lib/apiClient";
-import { LoginUserPayload, RegisterUserPayload } from "./auth.types";
+import { LoginUserPayload, RegisterUserPayload, VerifyEmailPayload } from "./auth.types";
 
 export const userLogin = (payload: LoginUserPayload) => {
   return apiClient("/auth/login", {
@@ -10,6 +10,13 @@ export const userLogin = (payload: LoginUserPayload) => {
 
 export const userRegister = (payload: RegisterUserPayload) => {
   return apiClient("/auth/register", {
+    method: "POST",
+    body: payload,
+  });
+};
+
+export const verifyEmail = (payload: VerifyEmailPayload) => {
+  return apiClient("/auth/verify-email", {
     method: "POST",
     body: payload,
   });
