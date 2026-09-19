@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/a11y/noSvgWithoutTitle: <explanation> */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import {
   Eye,
@@ -25,7 +25,7 @@ import { loginSchema } from "../auth.schema";
 import { useLogin } from "../hooks";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FetchError } from "ofetch";
 import GoogleLoginButton from "./google-login";
 
@@ -33,6 +33,7 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { mutate: login, isPending: loginPending } = useLogin();
+  const searchParams = useSearchParams();
 
   const form = useForm({
     defaultValues: {
@@ -49,14 +50,13 @@ const LoginForm = () => {
         email: value.email,
         password: value.password,
       };
-      console.log(loginData);
       login(loginData, {
         onSuccess: (res) => {
-          console.log(res);
           if (!res.success) {
             toast.error(
               res.message || "Authentication failed. Please try again.",
             );
+            return;
           }
           toast.success(res.message || "Logged in successfully!");
           router.push("/");
@@ -70,6 +70,17 @@ const LoginForm = () => {
       });
     },
   });
+
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (error === "google-login-failed") {
+     toast.error("Google login is only available for Candidates.", {
+       description: "Please login with email and password.",
+       id: "google-login-error",
+     });
+      window.history.replaceState(null, "", "/login");
+    }
+  }, [searchParams]);
 
   return (
     <div className="w-full max-w-md">

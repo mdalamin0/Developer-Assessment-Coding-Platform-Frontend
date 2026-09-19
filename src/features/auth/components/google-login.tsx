@@ -8,8 +8,8 @@ import { useState } from 'react';
 
 
 const GoogleLoginButton = () => {
-
 const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
 
 const handleGoogleLogin = () => {
   setIsGoogleLoading(true);
