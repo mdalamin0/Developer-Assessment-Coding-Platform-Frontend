@@ -10,11 +10,14 @@ export default async function VerifyEmailPage({
   searchParams: Promise<{ email?: string }>;
 }) {
   const { email } = await searchParams;
+  
 
   if (!email) {
     redirect("/");
   }
+
   
+
   return (
     <main className="relative min-h-svh overflow-hidden bg-background">
       <BackgroundDecoration />
@@ -26,7 +29,7 @@ export default async function VerifyEmailPage({
         </header>
 
         {/* Verification */}
-        <div className="flex flex-1 items-center justify-center py-8 sm:py-10">
+        <div className="flex flex-1 items-center justify-center py-8 ">
           <div className="w-full max-w-md">
             <div className="rounded-2xl border bg-card p-6 shadow-xl shadow-primary/5 sm:p-8 lg:p-10">
               <Suspense fallback={<>Loading...</>}>
@@ -35,6 +38,7 @@ export default async function VerifyEmailPage({
             </div>
           </div>
         </div>
+        
 
         {/* Footer */}
         <footer className="shrink-0 pb-4 sm:pb-5">

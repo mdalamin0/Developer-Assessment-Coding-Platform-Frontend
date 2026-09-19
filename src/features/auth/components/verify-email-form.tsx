@@ -16,9 +16,9 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import {  useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useVerifyEmail } from "../hooks";
+import { useResendVerificationCode, useVerifyEmail } from "../hooks";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { FetchError } from "ofetch";
@@ -28,9 +28,11 @@ const VerifyEmailForm = () => {
   const email = searchParams.get("email") || "";
   const [otp, setOtp] = useState("");
   const [isInvalid, setIsInvalid] = useState(false);
+  const [countdown, setCountdown] = useState(59);
   const { mutate: verify, isPending: verifyPending } = useVerifyEmail();
+  const { mutate: resendOTP, isPending: resendOTPPending } =
+    useResendVerificationCode();
   const router = useRouter();
-
 
   const handleOTP = () => {
     if (otp.length !== 6) {
@@ -63,7 +65,39 @@ const VerifyEmailForm = () => {
     });
   };
 
-  
+  useEffect(() => {
+    if (countdown === 0) return;
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [countdown]);
+
+ const handleResendCode = () => {
+   if (countdown > 0 || resendOTPPending) return; 
+
+   // resend verification code API call
+   resendOTP(
+     { email },
+     {
+       onSuccess: (res) => {
+         if (!res.success) {
+           toast.error("OTP Send failed");
+           return; 
+         }
+
+         toast.success(res.message || "Verification OTP Send");
+         setCountdown(59);
+       },
+       onError: (error: FetchError) => {
+         const errorMessage =
+           error?.data?.message || error?.message || "OTP Send failure";
+         toast.error(errorMessage);
+       },
+     },
+   );
+ };
+
 
   return (
     <div className="w-full">
@@ -161,9 +195,15 @@ const VerifyEmailForm = () => {
         Didn&apos;t receive the code?{" "}
         <button
           type="button"
-          className="font-semibold text-primary underline-offset-4 hover:underline"
+          disabled={countdown > 0 || resendOTPPending}
+          onClick={handleResendCode}
+          className="font-semibold text-primary underline-offset-4 transition-colors hover:underline disabled:cursor-not-allowed disabled:text-muted-foreground disabled:no-underline"
         >
-          Resend code
+          {countdown > 0
+            ? `Resend code in ${countdown}s`
+            : resendOTPPending
+              ? "Resending..."
+              : "Resend"}
         </button>
       </div>
 

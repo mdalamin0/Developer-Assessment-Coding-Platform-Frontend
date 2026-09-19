@@ -1,12 +1,6 @@
 import apiClient from "@/lib/apiClient";
-import { LoginUserPayload, RegisterUserPayload, VerifyEmailPayload } from "./auth.types";
+import { LoginUserPayload, RegisterUserPayload, resendVerificationPayload, VerifyEmailPayload } from "./auth.types";
 
-export const userLogin = (payload: LoginUserPayload) => {
-  return apiClient("/auth/login", {
-    method: "POST",
-    body: payload,
-  });
-};
 
 export const userRegister = (payload: RegisterUserPayload) => {
   return apiClient("/auth/register", {
@@ -15,9 +9,29 @@ export const userRegister = (payload: RegisterUserPayload) => {
   });
 };
 
+export const userLogin = (payload: LoginUserPayload) => {
+  return apiClient("/auth/login", {
+    method: "POST",
+    body: payload,
+  });
+};
+
+
+
 export const verifyEmail = (payload: VerifyEmailPayload) => {
   return apiClient("/auth/verify-email", {
     method: "POST",
     body: payload,
   });
 };
+
+export const resendVerficationCode = (payload: resendVerificationPayload) => {
+  return apiClient("/auth/resend-verification-code", {
+    method: "POST",
+    body: payload,
+  });
+};
+
+export const googleLogin = () => {
+  return apiClient("/auth/google")
+}

@@ -17,3 +17,7 @@ export interface VerifyEmailPayload {
   otp: string;
 }
 
+export interface resendVerificationPayload {
+  email: string;
+}
+
