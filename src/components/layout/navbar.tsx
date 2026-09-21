@@ -44,7 +44,6 @@ export default function Navbar() {
   const { mutate: logout } = useLogout();
   const queryClient = useQueryClient();
 
-  console.log("data:", data);
 
   const user = data?.data;
   const role = user?.role as UserRole | undefined;

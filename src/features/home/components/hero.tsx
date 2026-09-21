@@ -207,7 +207,7 @@ const Hero = () => {
             </div>
 
             {/* Floating candidates card */}
-            <div className="absolute -right-2 top-8 rounded-2xl border bg-card/90 p-3 shadow-xl shadow-primary/10 backdrop-blur-xl sm:-right-7 sm:p-4">
+            <div className="absolute -right-2 -top-8 rounded-2xl border bg-card/90 p-3 shadow-xl shadow-primary/10 backdrop-blur-xl sm:-right-7 sm:p-4">
               <div className="flex items-center gap-3">
                 <div className="flex -space-x-2">
                   <div className="flex size-7 items-center justify-center rounded-full border-2 border-card bg-primary text-[9px] font-bold text-primary-foreground">
