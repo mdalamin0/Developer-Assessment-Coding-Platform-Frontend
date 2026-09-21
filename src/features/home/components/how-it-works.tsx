@@ -34,7 +34,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="page-section overflow-hidden">
+    <section id="howItWorks" className="page-section overflow-hidden scroll-mt-24">
       <div className="container-app">
         {/* Section Header */}
         <div className="mx-auto mb-12 max-w-2xl text-center">

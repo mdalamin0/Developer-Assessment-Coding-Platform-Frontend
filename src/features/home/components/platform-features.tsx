@@ -50,7 +50,7 @@ const features = [
 
 export default function PlatformFeatures() {
   return (
-    <section className="page-section">
+    <section className="page-section scroll-mt-24" id="features">
       <div className="container-app">
         {/* Section Header */}
         <div className="mx-auto mb-12 max-w-2xl text-center">
