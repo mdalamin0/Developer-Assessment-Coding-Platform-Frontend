@@ -2,11 +2,12 @@ import Image from "next/image";
 import Logo from "@/assets/logo/Logo";
 import RgisterForm from "@/features/auth/components/register.form";
 import BackgroundDecoration from "@/components/shared/background-decoration";
+import TrustPoints from "@/components/shared/trust-points";
 
 export default function RegisterPage() {
   return (
     <main className="relative min-h-svh overflow-hidden bg-background">
-      <BackgroundDecoration/>
+      <BackgroundDecoration />
 
       <div className="container-app relative flex min-h-svh flex-col">
         {/* Header */}
@@ -48,23 +49,7 @@ export default function RegisterPage() {
                   <div className="absolute inset-x-0 top-[60%] px-8 lg:px-10">
                     <div className="mx-auto max-w-md">
                       <div className="mb-4 h-px bg-border/60" />
-
-                      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1.5">
-                          <span className="size-2 rounded-full bg-chart-3" />
-                          Timed assessments
-                        </span>
-
-                        <span className="flex items-center gap-1.5">
-                          <span className="size-2 rounded-full bg-primary" />
-                          Skill evaluation
-                        </span>
-
-                        <span className="flex items-center gap-1.5">
-                          <span className="size-2 rounded-full bg-chart-2" />
-                          Secure submissions
-                        </span>
-                      </div>
+                      <TrustPoints />
                     </div>
                   </div>
 

@@ -58,6 +58,7 @@ export default function NotFound() {
 
           <h1
             className="
+            dark:text-gray-800
               max-w-[290px]
               text-[26px]
               font-semibold
@@ -77,6 +78,7 @@ export default function NotFound() {
 
           <p
             className="
+            dark:text-gray-400
               mx-auto
               mt-3
               max-w-[285px]
