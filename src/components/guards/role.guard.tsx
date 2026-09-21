@@ -3,23 +3,21 @@
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect } from "react";
 
-import { UserRole } from "@/features/auth/auth.types";
+import {  UserRoleType } from "@/features/auth/auth.types";
 import AccessDenied from "./access-denied";
 import AuthLoading from "./auth-loading";
 import { useGetMe } from "@/features/auth/hooks";
 
 interface IProps {
   children: ReactNode;
-  roles: UserRole[];
+  roles: UserRoleType[];
 }
 
 export default function RoleGuard({ children, roles }: IProps) {
   const router = useRouter();
 
   const { data, isPending, isError } = useGetMe();
-
   const user = data?.data;
-
   const isAuthorized = !!user && roles.includes(user.role);
 
   useEffect(() => {
@@ -41,5 +39,5 @@ export default function RoleGuard({ children, roles }: IProps) {
     return <>{children}</>;
   }
 
-  return <AccessDenied />;
+  return <AccessDenied role={user.role} />;
 }

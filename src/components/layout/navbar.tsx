@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "cn";
 import { useGetMe, useLogout } from "@/features/auth/hooks";
-import { UserRole } from "@/features/auth/auth.types";
+import { UserRole, UserRoleType } from "@/features/auth/auth.types";
 
 const navLinks = [
   {
@@ -46,14 +46,14 @@ export default function Navbar() {
 
 
   const user = data?.data;
-  const role = user?.role as UserRole | undefined;
+  const role = user?.role as UserRoleType | undefined;
 
   const dashboardRoute =
-    role === "CANDIDATE"
+    role === UserRole.CANDIDATE
       ? "/candidate"
-      : role === "RECRUITER"
+      : role === UserRole.RECRUITER
         ? "/recruiter"
-        : role === "ADMIN"
+        : role === UserRole.ADMIN
           ? "/admin"
           : "/";
 
@@ -150,6 +150,7 @@ export default function Navbar() {
             ) : user ? (
               <Button size="lg" variant={"destructive"} onClick={handleLogout}>
                 Logout
+                <LogOut />
               </Button>
             ) : (
               <>
@@ -258,6 +259,7 @@ export default function Navbar() {
                         }}
                       >
                         Logout
+                        <LogOut />
                       </Button>
                     </div>
                   ) : (

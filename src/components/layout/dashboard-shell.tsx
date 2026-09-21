@@ -1,15 +1,27 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
+import DashboardSidebar from "./dashboard-sidebar";
+import { UserRoleType } from "@/features/auth/auth.types";
+import DashboardHeader from "./dashboard-header";
+import { useGetMe } from "@/features/auth/hooks";
 
 interface DashboardShellProps {
   children: ReactNode;
+  role: UserRoleType;
 }
 
-export default function DashboardShell({ children }: DashboardShellProps) {
+export default function DashboardShell({
+  children,
+  role,
+}: DashboardShellProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const { data } = useGetMe();
+  const user = data?.data;
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Premium ambient background */}
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
@@ -21,24 +33,17 @@ export default function DashboardShell({ children }: DashboardShellProps) {
       </div>
 
       <div className="flex min-h-screen">
-        {/* Sidebar will be added here */}
-        <aside className="hidden w-64 shrink-0 border-r bg-card/80 backdrop-blur-xl lg:block">
-          <div className="flex h-full min-h-screen items-center justify-center p-6">
-            <span className="text-sm text-muted-foreground">
-              Dashboard Sidebar
-            </span>
-          </div>
-        </aside>
+        <DashboardSidebar
+          role={role}
+          open={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
 
         <div className="flex min-w-0 flex-1 flex-col">
-          {/* Header will be added here */}
-          <header className="sticky top-0 z-30 h-16 border-b bg-background/80 backdrop-blur-xl">
-            <div className="flex h-full items-center px-4 sm:px-6 lg:px-8">
-              <span className="text-sm font-medium text-muted-foreground">
-                Dashboard Header
-              </span>
-            </div>
-          </header>
+          <DashboardHeader
+            user={user}
+            onMenuClick={() => setSidebarOpen(true)}
+          />
 
           <main className="min-w-0 flex-1">{children}</main>
         </div>

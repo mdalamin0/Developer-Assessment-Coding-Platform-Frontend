@@ -2,14 +2,11 @@ import Link from "next/link";
 import { ArrowLeft, LockKeyhole, ShieldAlert } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useGetMe } from "@/features/auth/hooks";
-import { UserRole } from "@/features/auth/auth.types";
+import { UserRoleType } from "@/features/auth/auth.types";
 
-export default function AccessDenied() {
-  const { data, isLoading } = useGetMe();
 
-  const user = data?.data;
-  const role = user?.role as UserRole | undefined;
+export default function AccessDenied({role}: {role: UserRoleType}) {
+
 
   const dashboardRoute =
     role === "CANDIDATE"

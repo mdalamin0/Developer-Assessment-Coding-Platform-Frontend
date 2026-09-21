@@ -1,5 +1,14 @@
 export type LoginRole = "CANDIDATE" | "RECRUITER";
-export type UserRole = "ADMIN" | "CANDIDATE" | "RECRUITER";
+export const UserRole = {
+  ADMIN: "ADMIN",
+  CANDIDATE: "CANDIDATE",
+  RECRUITER: "RECRUITER",
+} as const; 
+
+
+export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
+
+
 
 export interface RegisterUserPayload {
   name: string;
