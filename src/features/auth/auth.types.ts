@@ -1,4 +1,5 @@
 export type LoginRole = "CANDIDATE" | "RECRUITER";
+export type UserRole = "ADMIN" | "CANDIDATE" | "RECRUITER";
 
 export interface RegisterUserPayload {
   name: string;

@@ -1,5 +1,5 @@
 import SectionBadge from "@/components/shared/section-badge";
-import { ArrowRight, ClipboardCheck, FilePlus2, Sparkles, UserPlus, Workflow } from "lucide-react";
+import { ArrowRight, ClipboardCheck, FilePlus2, UserPlus, Workflow } from "lucide-react";
 
 const steps = [
   {
