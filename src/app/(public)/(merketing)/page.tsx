@@ -1,4 +1,3 @@
-import Footer from "@/components/layout/footer";
 import BackgroundDecoration from "@/components/shared/background-decoration";
 import FinalCta from "@/features/home/components/final-cta";
 import Hero from "@/features/home/components/hero";
@@ -15,7 +14,6 @@ export default function HomePage() {
       <PlatformFeatures/>
       <WhyDevAssess/>
       <FinalCta/>
-      <Footer/>
     </div>
   );
 }

@@ -44,6 +44,8 @@ export default function DashboardHeader({
     .slice(0, 2)
     .toUpperCase();
 
+  
+
      const handleLogout = () => {
        logout(undefined, {
          onSuccess: () => {
