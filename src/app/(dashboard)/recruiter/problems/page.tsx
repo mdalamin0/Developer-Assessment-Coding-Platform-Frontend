@@ -7,11 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Modal from "@/components/shared/modal";
 import ProblemForm from "@/features/problems/components/problem-form";
-import { useGetRecruiterProblems } from "@/features/problems/hooks/problem.hooks";
+import {
+  useDeleteProblem,
+  useGetRecruiterProblems,
+} from "@/features/problems/hooks/problem.hooks";
 import { ProblemFormValues } from "@/features/problems/problems.types";
 import TablePagination from "@/components/shared/dashboard/table-pagination";
 import useDebounce from "@/hooks/debounce.hook";
 import ProblemCardSkeleton from "@/features/problems/components/problem-card-skeleton";
+import { toast } from "sonner";
+import { FetchError } from "ofetch";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Problem extends ProblemFormValues {
   id: string;
@@ -23,6 +29,8 @@ const RecruiterProblemPage = () => {
   const [selectedProblem, setSelectedProblem] = useState<Problem | undefined>();
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebounce(search);
+  const [deleteProblem, setDeleteProblem] = useState<Problem | null>(null);
+  const queryClient = useQueryClient()
 
   const queryParams = {
     page,
@@ -31,6 +39,8 @@ const RecruiterProblemPage = () => {
   };
 
   const { data, isLoading } = useGetRecruiterProblems(queryParams);
+  const { mutate: deleteProblemApi, isPending: deletePending } =
+    useDeleteProblem();
 
   const totalPages = data?.data.meta?.totalPages ?? 0;
   // const totalPages = 2;
@@ -49,6 +59,33 @@ const RecruiterProblemPage = () => {
   const handleCancel = () => {
     setModalOpen(false);
     setSelectedProblem(undefined);
+  };
+
+  const handleDeleteProblem = () => {
+    if (!deleteProblem) return;
+
+    deleteProblemApi(deleteProblem.id, {
+      onSuccess: (res) => {
+        console.log(res);
+
+        toast.success(res.message || "Problem deleted successfully");
+
+        queryClient.removeQueries({
+          queryKey: ["problems"],
+        });
+
+        setDeleteProblem(null);
+      },
+
+      onError: (error: FetchError) => {
+        const errorMessage =
+          error?.data?.message || error?.message || "Problem deletion failed";
+
+        toast.error(errorMessage, {
+          description: "Something went wrong! Please try again.",
+        });
+      },
+    });
   };
 
   return (
@@ -92,7 +129,9 @@ const RecruiterProblemPage = () => {
           </div>
 
           {/* Problem List */}
-          { isLoading ? <ProblemCardSkeleton/> :  problems.length === 0 ? (
+          {isLoading ? (
+            <ProblemCardSkeleton />
+          ) : problems.length === 0 ? (
             <div className="empty-state">
               <div className="mx-auto flex max-w-md flex-col items-center text-center">
                 <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-muted">
@@ -139,6 +178,7 @@ const RecruiterProblemPage = () => {
                         size="icon-sm"
                         variant="outline"
                         className="text-destructive"
+                        onClick={() => setDeleteProblem(problem)}
                       >
                         <Trash2 />
                       </Button>
@@ -176,6 +216,7 @@ const RecruiterProblemPage = () => {
                         size="icon-sm"
                         variant="outline"
                         className="text-destructive"
+                        onClick={() => setDeleteProblem(problem)}
                       >
                         <Trash2 />
                       </Button>
@@ -211,6 +252,55 @@ const RecruiterProblemPage = () => {
         mode="form"
       >
         <ProblemForm problem={selectedProblem} onCancel={handleCancel} />
+      </Modal>
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={!!deleteProblem}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteProblem(null);
+          }
+        }}
+        title="Delete Problem"
+        description="This action cannot be undone."
+        mode="confirm"
+      >
+        <div className="space-y-6">
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete{" "}
+            <span className="font-medium text-foreground">
+              "{deleteProblem?.title}"
+            </span>
+            ?
+          </p>
+
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setDeleteProblem(null)}
+              disabled={deletePending}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleDeleteProblem}
+              disabled={deletePending}
+            >
+              {deletePending ? (
+                "Deleting..."
+              ) : (
+                <>
+                  <Trash2 />
+                  Delete Problem
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </>
   );

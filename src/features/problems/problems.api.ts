@@ -19,6 +19,12 @@ export const updateProblem = (id: string, payload: UpdateProblemData) => {
   });
 };
 
+export const deleteProblem = (id: string) => {
+  return apiClient(`problems/${id}`, {
+    method: "DELETE"
+  });
+};
+
 export const getRecruiterProblems = (params: ProblemParams) => {
   return apiClient("/problems/my-problems", {
     params,
