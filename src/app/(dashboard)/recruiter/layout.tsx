@@ -8,7 +8,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RoleGuard roles={[UserRole.RECRUITER, UserRole.ADMIN]}>
+    <RoleGuard roles={[UserRole.RECRUITER]}>
       <DashboardShell role={UserRole.RECRUITER}>{children}</DashboardShell>
     </RoleGuard>
   );
