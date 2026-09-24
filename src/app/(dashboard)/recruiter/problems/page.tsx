@@ -66,7 +66,6 @@ const RecruiterProblemPage = () => {
 
     deleteProblemApi(deleteProblem.id, {
       onSuccess: (res) => {
-        console.log(res);
 
         toast.success(res.message || "Problem deleted successfully");
 
@@ -84,6 +83,8 @@ const RecruiterProblemPage = () => {
         toast.error(errorMessage, {
           description: "Something went wrong! Please try again.",
         });
+        setDeleteProblem(null);
+        setModalOpen(false);
       },
     });
   };

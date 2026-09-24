@@ -21,12 +21,27 @@ export const updateProblem = (id: string, payload: UpdateProblemData) => {
 
 export const deleteProblem = (id: string) => {
   return apiClient(`problems/${id}`, {
-    method: "DELETE"
+    method: "DELETE",
   });
 };
 
 export const getRecruiterProblems = (params: ProblemParams) => {
   return apiClient("/problems/my-problems", {
     params,
+  });
+};
+
+export const getAssessmentProblems = (id: string) => {
+  return apiClient(`/assessments/${id}/problems`);
+};
+
+
+
+export const removeProblemFromAssessment = (
+  assessmentId: string,
+  problemId: string,
+) => {
+  return apiClient(`/assessments/${assessmentId}/problems/${problemId}`, {
+    method: "DELETE",
   });
 };

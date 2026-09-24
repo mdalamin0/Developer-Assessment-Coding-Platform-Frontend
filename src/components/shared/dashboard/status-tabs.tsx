@@ -22,12 +22,12 @@ export default function StatusTabs({
 }: StatusTabsProps) {
   return (
     <Tabs value={value} onValueChange={onValueChange} className={className}>
-      <TabsList className="h-auto w-full justify-start overflow-x-auto rounded-xl bg-muted/60 p-1 sm:w-fit">
+      <TabsList className="h-auto w-full justify-start overflow-x-auto  bg-muted/60 p-1 sm:w-fit">
         {items.map((item) => (
           <TabsTrigger
             key={item.value}
             value={item.value}
-            className="shrink-0 rounded-lg px-4 py-2 text-sm"
+            className="shrink-0 rounded-lg px-4 py-2 text-sm "
           >
             {item.label}
           </TabsTrigger>

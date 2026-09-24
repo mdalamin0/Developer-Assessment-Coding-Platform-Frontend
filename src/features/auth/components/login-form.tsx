@@ -37,8 +37,10 @@ const LoginForm = () => {
 
   const form = useForm({
     defaultValues: {
-      email: "testeradmin@gmail.com",
-      password: "Tester@admin12345",
+      email: "sumaiya84857@gmail.com",
+      password: "Candidate@123",
+      // email: "testeradmin@gmail.com",
+      // password: "Tester@admin12345",
     },
 
     validators: {

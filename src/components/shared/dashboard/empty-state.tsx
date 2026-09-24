@@ -1,4 +1,4 @@
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, Plus } from "lucide-react";
 
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ export default function EmptyState({
   return (
     <div
       className={cn(
-        "flex min-h-72 flex-col items-center justify-center px-6 py-10 text-center",
+        "empty-state flex min-h-72 flex-col items-center justify-center px-6 py-10 text-center",
         className,
       )}
     >
@@ -45,7 +45,8 @@ export default function EmptyState({
 
       {/* Action */}
       {actionLabel && onAction && (
-        <Button type="button" size="sm" onClick={onAction} className="mt-5">
+        <Button type="button"  onClick={onAction} className="mt-5">
+          <Plus/>
           {actionLabel}
         </Button>
       )}

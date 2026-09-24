@@ -23,9 +23,10 @@ export default function DataSearch({
 
       <Input
         value={value}
+        type="search"
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="h-10 rounded-xl pl-9"
+        className="h-10 pl-9"
       />
     </div>
   );
