@@ -21,13 +21,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import EmptyState from "@/components/shared/dashboard/empty-state";
 
+import { useRemoveProblemFromAssessment } from "@/features/problems/hooks/problem.hooks";
 import {
-  useRemoveProblemFromAssessment,
-} from "@/features/problems/hooks/problem.hooks";
-import { AssessmentQuestion } from "@/features/problems/problems.types";
+  AssessmentQuestion,
+  Problem,
+} from "@/features/problems/problems.types";
 import ManageProblemsSkeleton from "@/features/assessments/components/recruiter/manage-problem-skeleton";
 import { useGetSingleAssessment } from "@/features/assessments/hooks/assessments.hooks";
 import { Spinner } from "@/components/ui/spinner";
+import AddProblemModal from "@/features/assessments/components/recruiter/add-problem-modal";
 
 const difficultyVariant = {
   EASY: "secondary",
@@ -36,7 +38,8 @@ const difficultyVariant = {
 } as const;
 
 const ManageProblemsPage = () => {
-  const router = useRouter();
+  const [addProblemOpen, setAddProblemOpen] = useState(false);
+
   const { assessmentId } = useParams<{ assessmentId: string }>();
   const queryClient = useQueryClient();
 
@@ -90,14 +93,8 @@ const ManageProblemsPage = () => {
     );
   };
 
-  const handleAddProblem = () => {
-    router.push(
-      `/recruiter/assessments/${assessmentId}/problems/add`,
-    );
-  };
-
   if (assessmentLoading) {
-    return < ManageProblemsSkeleton/>;
+    return <ManageProblemsSkeleton />;
   }
 
   if (assessmentError || !assessment) {
@@ -118,7 +115,7 @@ const ManageProblemsPage = () => {
     <main className="container-app py-6 sm:py-8">
       <div className="space-y-8">
         {/* Page Header */}
-     
+
         <div className="page-header">
           <div className="space-y-3">
             <Button
@@ -178,7 +175,7 @@ const ManageProblemsPage = () => {
 
                 <Button
                   type="button"
-                  onClick={handleAddProblem}
+                  onClick={() => setAddProblemOpen(true)}
                   className="shrink-0"
                 >
                   <Plus />
@@ -275,7 +272,7 @@ const ManageProblemsPage = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleAddProblem}
+                onClick={() => setAddProblemOpen(true)}
               >
                 <Plus />
                 Add Problem
@@ -290,7 +287,7 @@ const ManageProblemsPage = () => {
                 title="No problems added"
                 description="This assessment doesn't have any problems yet. Add problems from your problem bank to build the assessment."
                 actionLabel="Add Problem"
-                onAction={handleAddProblem}
+                onAction={() => setAddProblemOpen(true)}
               />
             </div>
           ) : (
@@ -366,7 +363,7 @@ const ManageProblemsPage = () => {
                             }
                             onClick={() => handleRemoveProblem(problem.id)}
                           >
-                            {isRemoving ? <Spinner/> :  <Trash2 />}
+                            {isRemoving ? <Spinner /> : <Trash2 />}
                           </Button>
                         </div>
                       </div>
@@ -378,6 +375,14 @@ const ManageProblemsPage = () => {
           )}
         </section>
       </div>
+      <AddProblemModal
+        open={addProblemOpen}
+        onOpenChange={setAddProblemOpen}
+        attachedProblemIds={problems.map((item: Problem) => item.id)}
+        onSubmit={(problemIds) => {
+          console.log("Selected problems:", problemIds);
+        }}
+      />
     </main>
   );
 };
