@@ -42,3 +42,19 @@ export const addProblemInAssessment = (
     body: payload,
   });
 };
+
+
+export const handlePaymentAssessment = (assessmentId: string) => {
+  return apiClient("/payment/create-payment", {
+    method: "POST",
+    body: {
+      assessmentId,
+    },
+  });
+}
+
+export const publishAssessment = (assessmentId: string) => {
+  return apiClient(`/assessments/${assessmentId}/publish`, {
+    method: "PATCH"
+  });
+}

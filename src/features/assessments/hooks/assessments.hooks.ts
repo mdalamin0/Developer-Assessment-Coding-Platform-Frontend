@@ -4,6 +4,8 @@ import {
   createAssessment,
   getRecruiterAssessments,
   getSingleAssessment,
+  handlePaymentAssessment,
+  publishAssessment,
   updateAssessment,
 } from "../assessment.api";
 import {
@@ -54,5 +56,19 @@ export const useAddProblemInAssessment = () => {
       assessmentId: string;
       payload: addProblemInAssessmentPayload;
     }) => addProblemInAssessment(assessmentId, payload),
+  });
+};
+
+export const useHandlePaymentAssessment = () => {
+  return useMutation({
+    mutationFn: ({ assessmentId }: { assessmentId: string }) =>
+      handlePaymentAssessment(assessmentId),
+  });
+};
+
+export const usePublishAssessment = () => {
+  return useMutation({
+    mutationFn: ({ assessmentId }: { assessmentId: string }) =>
+      publishAssessment(assessmentId),
   });
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -8,12 +8,12 @@ import {
   CheckCheck,
   ClipboardList,
   Clock3,
+  CreditCard,
   FileQuestion,
   Pencil,
   Plus,
   Target,
   Trash2,
-  Users,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -21,9 +21,12 @@ import { Badge } from "@/components/ui/badge";
 import DataSearch from "@/components/shared/dashboard/data-search";
 import StatusTabs from "@/components/shared/dashboard/status-tabs";
 import TablePagination from "@/components/shared/dashboard/table-pagination";
-import { useGetRecruiterAssessments } from "@/features/assessments/hooks/assessments.hooks";
 import {
-  AssessmentFormValues,
+  useGetRecruiterAssessments,
+  useHandlePaymentAssessment,
+  usePublishAssessment,
+} from "@/features/assessments/hooks/assessments.hooks";
+import {
   AssessmentStatus,
   ProblemDataType,
 } from "@/features/assessments/assessment.types";
@@ -33,6 +36,10 @@ import AssessmentSkeleton from "@/features/assessments/components/recruiter/asse
 import EmptyState from "@/components/shared/dashboard/empty-state";
 import Modal from "@/components/shared/modal";
 import AssessmentForm from "@/features/assessments/components/recruiter/assessment-form";
+import { FetchError } from "ofetch";
+import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 const statusTabs = [
   { value: "ALL", label: "All" },
@@ -44,13 +51,26 @@ const statusTabs = [
 ];
 
 const RecruiterAssessmentsPage = () => {
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<"ALL" | AssessmentStatus>("ALL");
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebounce(search);
   const [assessmentModalOpen, setAssessmentModalOpen] = useState(false);
-  const [selectedAssessment, setSelectedAssessment] =
-    useState<any | null>(null);
+  const [selectedAssessment, setSelectedAssessment] = useState<any | null>(
+    null,
+  );
+
+  const [paymentAssessmentId, setPaymentAssessmentId] = useState<string | null>(
+    null,
+  );
+
+  const { mutate: createPayment, isPending: isPaymentPending } =
+    useHandlePaymentAssessment();
+
+  const { mutate: publishAssessment, isPending: isPublishing } =
+    usePublishAssessment();
 
   const queryParams = {
     page,
@@ -73,6 +93,65 @@ const RecruiterAssessmentsPage = () => {
   const handleStatusChange = (value: string) => {
     setTab(value as AssessmentStatus);
     setPage(1);
+  };
+
+  const handlePaymentAssessment = (assessmentId: string) => {
+    createPayment(
+      { assessmentId },
+      {
+        onSuccess: (response) => {
+          window.location.href = response?.data?.paymentUrl;
+        },
+
+        onError: (error) => {
+          if (error instanceof FetchError) {
+            toast.error(error.data?.message || "Failed to create payment!");
+            return;
+          }
+
+          toast.error("Something went wrong!");
+        },
+      },
+    );
+  };
+
+  useEffect(() => {
+    const payment = searchParams.get("payment");
+    const assessmentId = searchParams.get("assessmentId");
+
+    if (payment === "success" && assessmentId) {
+      setPaymentAssessmentId(assessmentId);
+    }
+  }, [searchParams]);
+
+  const handlePublish = (assessmentId: string) => {
+    publishAssessment(
+      {
+        assessmentId,
+      },
+      {
+        onSuccess: (response) => {
+          toast.success(
+            response?.message || "Assessment published successfully!",
+          );
+
+          queryClient.invalidateQueries({
+            queryKey: ["assessments"],
+          });
+
+          setPaymentAssessmentId(null);
+        },
+
+        onError: (error) => {
+          if (error instanceof FetchError) {
+            toast.error(error.data?.message || "Failed to publish assessment!");
+            return;
+          }
+
+          toast.error("Something went wrong!");
+        },
+      },
+    );
   };
 
   return (
@@ -169,23 +248,53 @@ const RecruiterAssessmentsPage = () => {
                     {/* Card Header */}
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap justify-between items-center gap-2">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
                           <h3 className="line-clamp-1 text-lg font-semibold tracking-tight">
                             {assessment.title}
                           </h3>
 
-                          <Badge
-                            variant={
-                              assessment.status === "PUBLISHED"
-                                ? "default"
-                                : assessment.status === "COMPLETED"
-                                  ? "secondary"
-                                  : "outline"
-                            }
-                            className="shrink-0 rounded-md"
-                          >
-                            {assessment.status}
-                          </Badge>
+                          <div className="flex shrink-0 items-center gap-2">
+                            <Badge
+                              variant={
+                                assessment.status === "PUBLISHED"
+                                  ? "default"
+                                  : assessment.status === "COMPLETED"
+                                    ? "secondary"
+                                    : "outline"
+                              }
+                              className="rounded-md"
+                            >
+                              {assessment.status}
+                            </Badge>
+
+                            {assessment.status === "DRAFT" &&
+                              (paymentAssessmentId === assessment.id ? (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  onClick={() => handlePublish(assessment.id)}
+                                  disabled={isPublishing}
+                                >
+                                  {isPublishing
+                                    ? "Publishing..."
+                                    : "Publish Now"}
+                                </Button>
+                              ) : (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  onClick={() =>
+                                    handlePaymentAssessment(assessment.id)
+                                  }
+                                  disabled={isPaymentPending}
+                                >
+                                  <CreditCard className="mr-2 size-4" />
+                                  {isPaymentPending
+                                    ? "Processing..."
+                                    : "Pay & Publish"}
+                                </Button>
+                              ))}
+                          </div>
                         </div>
 
                         <p className="mt-2 line-clamp-2 min-h-[48px] text-sm leading-6 text-muted-foreground">
