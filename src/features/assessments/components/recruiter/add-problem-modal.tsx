@@ -1,18 +1,22 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, FileQuestion, Search } from "lucide-react";
+import { Check, FileQuestion } from "lucide-react";
+import { FetchError } from "ofetch";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import EmptyState from "@/components/shared/dashboard/empty-state";
 import Modal from "@/components/shared/modal";
-import { useGetRecruiterProblems } from "@/features/problems/hooks/problem.hooks";
-import useDebounce from "@/hooks/debounce.hook";
 import DataSearch from "@/components/shared/dashboard/data-search";
 import TablePagination from "@/components/shared/dashboard/table-pagination";
+
+import { useGetRecruiterProblems } from "@/features/problems/hooks/problem.hooks";
 import { ProblemListSkeleton } from "@/features/problems/components/problem-list-skeleton";
+import { useAddProblemInAssessment } from "../../hooks/assessments.hooks";
+import useDebounce from "@/hooks/debounce.hook";
 
 interface Problem {
   id: string;
@@ -25,9 +29,8 @@ interface Problem {
 interface AddProblemModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  assessmentId: string;
   attachedProblemIds: string[];
-  isPending?: boolean;
-  onSubmit: (problemIds: string[]) => void;
 }
 
 const difficultyVariant = {
@@ -39,14 +42,19 @@ const difficultyVariant = {
 const AddProblemModal = ({
   open,
   onOpenChange,
+  assessmentId,
   attachedProblemIds,
-  isPending = false,
-  onSubmit,
 }: AddProblemModalProps) => {
+  const queryClient = useQueryClient();
+
   const [search, setSearch] = useState("");
-  const [selectedProblems, setSelectedProblems] = useState<string[]>([]);
+  const [selectedProblem, setSelectedProblem] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+
   const debouncedSearch = useDebounce(search);
+
+  const { mutate: addProblemInAssessment, isPending: addProblemPending } =
+    useAddProblemInAssessment();
 
   const queryParams = {
     page,
@@ -79,20 +87,44 @@ const AddProblemModal = ({
   // }, [availableProblems, search]);
 
   const toggleProblem = (problemId: string) => {
-    setSelectedProblems((current) =>
-      current.includes(problemId)
-        ? current.filter((id) => id !== problemId)
-        : [...current, problemId],
-    );
+    setSelectedProblem((current) => (current === problemId ? null : problemId));
   };
 
-  const handleSubmit = () => {
-    if (!selectedProblems.length) {
-      return;
-    }
+const handleSubmit = () => {
+  if (!selectedProblem || !assessmentId) {
+    return;
+  }
 
-    onSubmit(selectedProblems);
-  };
+  addProblemInAssessment(
+    {
+      assessmentId,
+      payload: {
+        problemId: selectedProblem,
+      },
+    },
+    {
+      onSuccess: (response) => {
+        toast.success(response?.message || "Problem added successfully!");
+
+        queryClient.invalidateQueries({
+          queryKey: ["assessment", assessmentId],
+        });
+
+        setSelectedProblem(null);
+        onOpenChange(false);
+      },
+
+      onError: (error) => {
+        if (error instanceof FetchError) {
+          toast.error(error.data?.message || "Failed to add problem!");
+          return;
+        }
+
+        toast.error("Something went wrong!");
+      },
+    },
+  );
+};
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -102,7 +134,8 @@ const AddProblemModal = ({
   const handleOpenChange = (value: boolean) => {
     if (!value) {
       setSearch("");
-      setSelectedProblems([]);
+      setSelectedProblem(null);
+      setPage(1);
     }
 
     onOpenChange(value);
@@ -112,14 +145,13 @@ const AddProblemModal = ({
     <Modal
       open={open}
       onOpenChange={handleOpenChange}
-      title="Add Problems"
-      description="Select problems from your problem bank to add to this assessment."
+      title="Add Problem"
+      description="Select a problem from your problem bank to add to this assessment."
       mode="form"
     >
       <div className="space-y-5">
         {/* Search */}
         <div className="relative">
-          
           <DataSearch
             value={search}
             onChange={handleSearchChange}
@@ -127,20 +159,11 @@ const AddProblemModal = ({
           />
         </div>
 
-        {/* Selected Count */}
-        {selectedProblems.length > 0 && (
-          <div className="rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm">
-            <span className="font-semibold text-primary">
-              {selectedProblems.length}
-            </span>{" "}
-            problem
-            {selectedProblems.length > 1 ? "s" : ""} selected
-          </div>
-        )}
-
         {/* Problem List */}
         <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1">
-          {isProblemsLoading ? <ProblemListSkeleton/> : problems.length === 0 ? (
+          {isProblemsLoading ? (
+            <ProblemListSkeleton />
+          ) : availableProblems.length === 0 ? (
             <EmptyState
               icon={FileQuestion}
               title={search ? "No problems found" : "No problems available"}
@@ -152,19 +175,20 @@ const AddProblemModal = ({
               className="min-h-52"
             />
           ) : (
-            problems.map((problem: Problem) => {
-              const selected = selectedProblems.includes(problem.id);
+            availableProblems.map((problem: Problem) => {
+              const selected = selectedProblem === problem.id;
 
               return (
                 <button
                   key={problem.id}
                   type="button"
+                  disabled={addProblemPending}
                   onClick={() => toggleProblem(problem.id)}
                   className={`w-full rounded-xl border p-4 text-left transition-all ${
                     selected
                       ? "border-primary/40 bg-primary/5 shadow-sm"
                       : "border-border/70 bg-card hover:border-primary/20 hover:bg-muted/30"
-                  }`}
+                  } disabled:cursor-not-allowed disabled:opacity-60`}
                 >
                   <div className="flex items-start gap-3">
                     {/* Checkbox */}
@@ -211,38 +235,37 @@ const AddProblemModal = ({
           )}
         </div>
 
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="my-5">
+            <TablePagination
+              page={page}
+              totalPages={totalPages}
+              handlePageChange={setPage}
+            />
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex items-center justify-end gap-2 border-t border-border/60 pt-4">
           <Button
             type="button"
             variant="outline"
             onClick={() => handleOpenChange(false)}
+            disabled={addProblemPending}
           >
             Cancel
           </Button>
 
           <Button
             type="button"
-            disabled={!selectedProblems.length || isPending}
+            disabled={!selectedProblem || addProblemPending}
             onClick={handleSubmit}
           >
-            {isPending
-              ? "Adding..."
-              : `Add ${selectedProblems.length || ""} Problem${
-                  selectedProblems.length > 1 ? "s" : ""
-                }`}
+            {addProblemPending ? "Adding..." : "Add Problem"}
           </Button>
         </div>
       </div>
-      {totalPages > 1 && (
-        <div className="my-5">
-          <TablePagination
-            page={page ?? 1}
-            totalPages={totalPages}
-            handlePageChange={setPage}
-          />
-        </div>
-      )}
     </Modal>
   );
 };

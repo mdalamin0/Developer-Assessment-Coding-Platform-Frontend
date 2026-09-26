@@ -41,7 +41,7 @@ const ProblemForm = ({ problem, onCancel }: ProblemFormProps) => {
     useUpdateProblem();
 
   const isPending = createPending || updatePending;
-  console.log(problem);
+  
 
   const form = useForm({
     defaultValues: problem ?? defaultValues,

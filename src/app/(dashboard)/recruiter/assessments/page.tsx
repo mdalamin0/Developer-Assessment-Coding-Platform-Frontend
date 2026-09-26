@@ -31,6 +31,8 @@ import useDebounce from "@/hooks/debounce.hook";
 import { format } from "date-fns";
 import AssessmentSkeleton from "@/features/assessments/components/recruiter/assessment-skeleton";
 import EmptyState from "@/components/shared/dashboard/empty-state";
+import Modal from "@/components/shared/modal";
+import AssessmentForm from "@/features/assessments/components/recruiter/assessment-form";
 
 const statusTabs = [
   { value: "ALL", label: "All" },
@@ -46,6 +48,9 @@ const RecruiterAssessmentsPage = () => {
   const [tab, setTab] = useState<"ALL" | AssessmentStatus>("ALL");
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebounce(search);
+  const [assessmentModalOpen, setAssessmentModalOpen] = useState(false);
+  const [selectedAssessment, setSelectedAssessment] =
+    useState<any | null>(null);
 
   const queryParams = {
     page,
@@ -84,7 +89,13 @@ const RecruiterAssessmentsPage = () => {
             </p>
           </div>
 
-          <Button size={"lg"} className="w-full  sm:w-auto">
+          <Button
+            type="button"
+            onClick={() => {
+              setSelectedAssessment(null);
+              setAssessmentModalOpen(true);
+            }}
+          >
             <Plus className="mr-2 size-4" />
             Create Assessment
           </Button>
@@ -129,7 +140,14 @@ const RecruiterAssessmentsPage = () => {
             description="You haven't created any assessments yet. Create your first assessment to start building your candidate evaluation."
             actionLabel="Create Assessment"
             onAction={() => (
-              <Button size={"lg"} className="w-full  sm:w-auto">
+              <Button
+                type="button"
+                onClick={() => {
+                  setSelectedAssessment(null);
+                  setAssessmentModalOpen(true);
+                }}
+              >
+                <Plus className="mr-2 size-4" />
                 Create Assessment
               </Button>
             )}
@@ -259,13 +277,31 @@ const RecruiterAssessmentsPage = () => {
 
                     <div className="  border-t border-border/60 pt-4 ">
                       <div className="flex justify-center md:justify-around flex-wrap items-center gap-2">
-                        <Button size="sm" variant="outline">
-                          <Pencil className="size-3.5" />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedAssessment(assessment);
+                            setAssessmentModalOpen(true);
+                          }}
+                        >
+                          <Pencil className="mr-2 size-4" />
                           Edit
                         </Button>
 
                         {/* Add Problems */}
-                        <Button render={ <Link href={`/recruiter/assessments/${assessment.id}/problems`}></Link>} nativeButton={false} size="sm" variant="outline" className="gap-1.5">
+                        <Button
+                          render={
+                            <Link
+                              href={`/recruiter/assessments/${assessment.id}/problems`}
+                            ></Link>
+                          }
+                          nativeButton={false}
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5"
+                        >
                           <Plus className="size-3.5" />
                           Add Problems
                         </Button>
@@ -303,6 +339,23 @@ const RecruiterAssessmentsPage = () => {
             />
           </div>
         )}
+
+        <Modal
+          open={assessmentModalOpen}
+          onOpenChange={setAssessmentModalOpen}
+          title={selectedAssessment ? "Edit Assessment" : "Create Assessment"}
+          description={
+            selectedAssessment
+              ? "Update your assessment details."
+              : "Create a new assessment for your candidates."
+          }
+          mode="form"
+        >
+          <AssessmentForm
+            assessment={selectedAssessment ?? undefined}
+            onCancel={() => setAssessmentModalOpen(false)}
+          />
+        </Modal>
       </div>
     </div>
   );

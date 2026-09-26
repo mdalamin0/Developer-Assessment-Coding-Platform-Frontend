@@ -2,10 +2,18 @@ export interface AssessmentFormValues {
   title: string;
   description?: string;
   duration: number;
-  totalMarks: number;
   passingMarks: number;
   startAt: string;
   endAt: string;
+}
+
+export interface IUpdateAssessmentPayload {
+  title?: string;
+  description?: string;
+  duration?: number;
+  passingMarks?: number;
+  startAt?: string;
+  endAt?: string;
 }
 
 export interface AssessmentFormProps {
@@ -53,4 +61,8 @@ export interface AssessmentParams {
   limit?: number;
   searchTerm?: string;
   sortOrder?: "desc" | "asc";
+}
+
+export interface addProblemInAssessmentPayload {
+  problemId: string
 }

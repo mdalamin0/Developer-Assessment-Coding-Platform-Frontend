@@ -379,9 +379,7 @@ const ManageProblemsPage = () => {
         open={addProblemOpen}
         onOpenChange={setAddProblemOpen}
         attachedProblemIds={problems.map((item: Problem) => item.id)}
-        onSubmit={(problemIds) => {
-          console.log("Selected problems:", problemIds);
-        }}
+        assessmentId={assessmentId}
       />
     </main>
   );

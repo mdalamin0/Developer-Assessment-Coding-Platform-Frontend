@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { format } from "date-fns";
+import { FetchError } from "ofetch";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -19,15 +22,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { AssessmentFormProps, AssessmentFormValues } from "../../assessment.types";
-import { assessmentSchema } from "../../assessment.shema";
 
+import {
+  AssessmentFormProps,
+  AssessmentFormValues,
+} from "../../assessment.types";
+import { assessmentSchema } from "../../assessment.shema";
+import {
+  useCreateAssessment,
+  useUpdateAssessment,
+} from "../../hooks/assessments.hooks";
 
 const defaultValues: AssessmentFormValues = {
   title: "",
   description: "",
   duration: 60,
-  totalMarks: 100,
   passingMarks: 60,
   startAt: "",
   endAt: "",
@@ -45,6 +54,15 @@ const combineDateAndTime = (date: Date | undefined, time: string): string => {
 };
 
 const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
+  const queryClient = useQueryClient();
+  const { mutate: createAssessment, isPending: isCreatePending } =
+    useCreateAssessment();
+
+  const { mutate: updateAssessment, isPending: isUpdatePending } =
+    useUpdateAssessment();
+
+  const isPending = isCreatePending || isUpdatePending;
+
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [startTime, setStartTime] = useState("");
 
@@ -59,7 +77,67 @@ const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
     },
 
     onSubmit: async ({ value }) => {
-      console.log(value);
+      if (assessment) {
+        updateAssessment(
+          {
+            assessmentId: assessment.id,
+            payload: value,
+          },
+          {
+            onSuccess: (response) => {
+              toast.success(
+                response?.message || "Assessment updated successfully!",
+              );
+
+              queryClient.invalidateQueries({
+                queryKey: ["assessments"],
+              });
+
+              queryClient.invalidateQueries({
+                queryKey: ["assessment", assessment.id],
+              });
+
+              onCancel?.();
+            },
+
+            onError: (error) => {
+              if (error instanceof FetchError) {
+                toast.error(
+                  error.data?.message || "Failed to update assessment!",
+                );
+                return;
+              }
+
+              toast.error("Something went wrong!");
+            },
+          },
+        );
+
+        return;
+      }
+
+      createAssessment(value, {
+        onSuccess: (response) => {
+          toast.success(
+            response?.message || "Assessment created successfully!",
+          );
+
+          queryClient.invalidateQueries({
+            queryKey: ["assessments"],
+          });
+
+          onCancel?.();
+        },
+
+        onError: (error) => {
+          if (error instanceof FetchError) {
+            toast.error(error.data?.message || "Failed to create assessment!");
+            return;
+          }
+
+          toast.error("Something went wrong!");
+        },
+      });
     },
   });
 
@@ -118,6 +196,7 @@ const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
                   onChange={(event) => field.handleChange(event.target.value)}
                   placeholder="Frontend Developer Assessment - Round 1"
                   aria-invalid={isInvalid}
+                  disabled={isPending}
                 />
 
                 <div className="min-h-5">
@@ -147,6 +226,7 @@ const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
                   placeholder="Assess core frontend development skills including JavaScript, React and CSS."
                   rows={4}
                   aria-invalid={isInvalid}
+                  disabled={isPending}
                 />
 
                 <div className="min-h-5">
@@ -157,8 +237,8 @@ const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
           }}
         </form.Field>
 
-        {/* Duration / Total Marks / Passing Marks */}
-        <div className="grid gap-5 sm:grid-cols-3">
+        {/* Duration / Passing Marks */}
+        <div className="grid gap-5 sm:grid-cols-2">
           <form.Field name="duration">
             {(field) => {
               const isInvalid =
@@ -181,38 +261,7 @@ const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
                       field.handleChange(Number(event.target.value))
                     }
                     aria-invalid={isInvalid}
-                  />
-
-                  <div className="min-h-5">
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </div>
-                </Field>
-              );
-            }}
-          </form.Field>
-
-          <form.Field name="totalMarks">
-            {(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
-
-              return (
-                <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Total Marks</FieldLabel>
-
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    type="number"
-                    min={1}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) =>
-                      field.handleChange(Number(event.target.value))
-                    }
-                    aria-invalid={isInvalid}
+                    disabled={isPending}
                   />
 
                   <div className="min-h-5">
@@ -245,6 +294,7 @@ const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
                       field.handleChange(Number(event.target.value))
                     }
                     aria-invalid={isInvalid}
+                    disabled={isPending}
                   />
 
                   <div className="min-h-5">
@@ -270,6 +320,7 @@ const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
                     type="button"
                     variant="outline"
                     className="w-full justify-start font-normal"
+                    disabled={isPending}
                   >
                     {startDate ? format(startDate, "PPP") : "Select start date"}
                   </Button>
@@ -308,6 +359,7 @@ const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
 
                 form.setFieldValue("startAt", dateTime);
               }}
+              disabled={isPending}
             />
           </Field>
         </div>
@@ -324,6 +376,7 @@ const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
                     type="button"
                     variant="outline"
                     className="w-full justify-start font-normal"
+                    disabled={isPending}
                   >
                     {endDate ? format(endDate, "PPP") : "Select end date"}
                   </Button>
@@ -362,6 +415,7 @@ const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
 
                 form.setFieldValue("endAt", dateTime);
               }}
+              disabled={isPending}
             />
           </Field>
         </div>
@@ -396,13 +450,24 @@ const AssessmentForm = ({ assessment, onCancel }: AssessmentFormProps) => {
         {/* Actions */}
         <div className="flex justify-end gap-3 border-t pt-5">
           {onCancel && (
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              disabled={isPending}
+            >
               Cancel
             </Button>
           )}
 
-          <Button type="submit">
-            {assessment ? "Update Assessment" : "Create Assessment"}
+          <Button type="submit" disabled={isPending}>
+            {isPending
+              ? assessment
+                ? "Updating..."
+                : "Creating..."
+              : assessment
+                ? "Update Assessment"
+                : "Create Assessment"}
           </Button>
         </div>
       </FieldGroup>
