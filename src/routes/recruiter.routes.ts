@@ -4,6 +4,7 @@ import {
   FileText,
   LayoutDashboard,
   ListChecks,
+  UserPlus,
   UserRound,
   WalletCards,
 } from "lucide-react";
@@ -23,6 +24,11 @@ export const recruiterRoutes = [
     label: "Problems",
     href: "/recruiter/problems",
     icon: ListChecks,
+  },
+  {
+    label: "Invite Candidate",
+    href: "/recruiter/candidates",
+    icon: UserPlus,
   },
   {
     label: "Evaluations",

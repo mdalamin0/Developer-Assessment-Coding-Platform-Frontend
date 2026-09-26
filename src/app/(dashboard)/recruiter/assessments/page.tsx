@@ -38,7 +38,7 @@ import Modal from "@/components/shared/modal";
 import AssessmentForm from "@/features/assessments/components/recruiter/assessment-form";
 import { FetchError } from "ofetch";
 import { toast } from "sonner";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
 const statusTabs = [
@@ -51,6 +51,7 @@ const statusTabs = [
 ];
 
 const RecruiterAssessmentsPage = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
@@ -140,6 +141,7 @@ const RecruiterAssessmentsPage = () => {
           });
 
           setPaymentAssessmentId(null);
+          router.replace("/recruiter/assessments");
         },
 
         onError: (error) => {

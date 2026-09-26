@@ -36,7 +36,7 @@ export interface Recruiter {
   userId: string;
 }
 
-export  type AssessmentStatus =  "DRAFT" | "PUBLISHED" | "ONGOING" | "COMPLETED" | "ARCHIVED";
+export type AssessmentStatus =  "DRAFT" | "PUBLISHED" | "ONGOING" | "COMPLETED" | "ARCHIVED";
 
 export interface ProblemDataType {
   id: string;
@@ -61,6 +61,7 @@ export interface AssessmentParams {
   limit?: number;
   searchTerm?: string;
   sortOrder?: "desc" | "asc";
+  status?: AssessmentStatus
 }
 
 export interface addProblemInAssessmentPayload {

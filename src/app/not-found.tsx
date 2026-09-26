@@ -133,23 +133,6 @@ export default function NotFound() {
               Back to Home
             </Button>
 
-            <Button
-              render={<Link href="/dashboard" />}
-              nativeButton={false}
-              variant="outline"
-              size="lg"
-              className="
-                h-11
-                w-full
-                min-[400px]:w-auto
-                min-w-40
-                bg-background/80
-                backdrop-blur-sm
-              "
-            >
-              <ArrowLeft className="mr-2 size-4" />
-              Go to Dashboard
-            </Button>
           </div>
         </div>
 
