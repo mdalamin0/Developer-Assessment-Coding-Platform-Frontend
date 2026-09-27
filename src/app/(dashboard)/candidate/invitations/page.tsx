@@ -4,7 +4,10 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { CalendarDays, Check, ClipboardList, Clock3, X } from "lucide-react";
 
-import { useGetCandidateInvitations } from "@/features/invitations/hooks/invitation.hooks";
+import {
+  useGetCandidateInvitations,
+  useResponseInvitation,
+} from "@/features/invitations/hooks/invitation.hooks";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +32,10 @@ import EmptyState from "@/components/shared/dashboard/empty-state";
 import StatusBadge from "@/components/shared/dashboard/status-badge";
 import TablePagination from "@/components/shared/dashboard/table-pagination";
 import CandidateInvitationSkeleton from "@/features/invitations/components/candidate-invitation-skeleton";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { FetchError } from "ofetch";
+import Modal from "@/components/shared/modal";
 
 const statusTabs = [
   { value: "ALL", label: "All" },
@@ -41,8 +48,15 @@ const CandidateInvitationsPage = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [tab, setTab] = useState<"ALL" | InvitationStatus>("ALL");
-
   const debouncedSearch = useDebounce(search);
+  const queryClient = useQueryClient();
+
+  const [declineModalOpen, setDeclineModalOpen] = useState(false);
+  const [selectedInvitation, setSelectedInvitation] =
+    useState<InvitationData | null>(null);
+
+  const { mutate: responseInvitation, isPending: isResponding } =
+    useResponseInvitation();
 
   const queryParams = {
     page,
@@ -102,6 +116,47 @@ const CandidateInvitationsPage = () => {
       default:
         return "default";
     }
+  };
+
+  const handleResponse = (
+    invitationId: string,
+    status: "ACCEPTED" | "DECLINED",
+  ) => {
+    responseInvitation(
+      {
+        invitationId,
+        payload: {
+          status,
+        },
+      },
+      {
+        onSuccess: (response) => {
+          toast.success(
+            response?.message ||
+              `Invitation ${status.toLowerCase()} successfully!`,
+          );
+
+          queryClient.invalidateQueries({
+            queryKey: ["invitations"],
+          });
+
+          setDeclineModalOpen(false);
+          setSelectedInvitation(null);
+        },
+
+        onError: (error) => {
+          if (error instanceof FetchError) {
+            toast.error(
+              error.data?.message ||
+                `Failed to ${status.toLowerCase()} invitation!`,
+            );
+            return;
+          }
+
+          toast.error("Something went wrong!");
+        },
+      },
+    );
   };
 
   return (
@@ -270,14 +325,26 @@ const CandidateInvitationsPage = () => {
                                     size="sm"
                                     variant="destructive"
                                     className="gap-1.5"
+                                    disabled={isResponding}
+                                    onClick={() => {
+                                      setSelectedInvitation(invitation);
+                                      setDeclineModalOpen(true);
+                                    }}
                                   >
                                     <X className="size-3.5" />
                                     Decline
                                   </Button>
 
-                                  <Button size="sm" className="gap-1.5">
+                                  <Button
+                                    size="sm"
+                                    className="gap-1.5"
+                                    disabled={isResponding}
+                                    onClick={() =>
+                                      handleResponse(invitation.id, "ACCEPTED")
+                                    }
+                                  >
                                     <Check className="size-3.5" />
-                                    Accept
+                                    {isResponding ? "Accepting..." : "Accept"}
                                   </Button>
                                 </>
                               )}
@@ -416,15 +483,27 @@ const CandidateInvitationsPage = () => {
                           <Button
                             size="sm"
                             variant="destructive"
-                            className="flex-1 gap-1.5"
+                            className="gap-1.5"
+                            disabled={isResponding}
+                            onClick={() => {
+                              setSelectedInvitation(invitation);
+                              setDeclineModalOpen(true);
+                            }}
                           >
                             <X className="size-3.5" />
                             Decline
                           </Button>
 
-                          <Button size="sm" className="flex-1 gap-1.5">
+                          <Button
+                            size="sm"
+                            className="gap-1.5"
+                            disabled={isResponding}
+                            onClick={() =>
+                              handleResponse(invitation.id, "ACCEPTED")
+                            }
+                          >
                             <Check className="size-3.5" />
-                            Accept
+                            {isResponding ? "Accepting..." : "Accept"}
                           </Button>
                         </>
                       )}
@@ -468,6 +547,49 @@ const CandidateInvitationsPage = () => {
                   />
                 </div>
               )}
+              <Modal
+                open={declineModalOpen}
+                onOpenChange={setDeclineModalOpen}
+                title="Decline Invitation"
+                description="Please confirm that you want to decline this assessment invitation."
+                mode="confirm"
+              >
+                <div className="space-y-5">
+                  <div className="rounded-xl border bg-muted/30 p-4">
+                    <p className="text-sm font-medium">
+                      {selectedInvitation?.assessment.title}
+                    </p>
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Are you sure you want to decline this invitation?
+                    </p>
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={isResponding}
+                      onClick={() => setDeclineModalOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      disabled={isResponding}
+                      onClick={() => {
+                        if (!selectedInvitation) return;
+
+                        handleResponse(selectedInvitation.id, "DECLINED");
+                      }}
+                    >
+                      {isResponding ? "Declining..." : "Yes, Decline"}
+                    </Button>
+                  </div>
+                </div>
+              </Modal>
             </>
           )}
         </div>

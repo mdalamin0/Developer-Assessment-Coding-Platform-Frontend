@@ -1,5 +1,8 @@
 import apiClient from "@/lib/apiClient";
-import { InvitationParams } from "./invitation.types";
+import {
+  IInvitationResponsePayload,
+  InvitationParams,
+} from "./invitation.types";
 
 export const inviteCandidate = (assessmentId: string, candidateId: string) => {
   return apiClient(`/invitations/${assessmentId}`, {
@@ -10,6 +13,16 @@ export const inviteCandidate = (assessmentId: string, candidateId: string) => {
 
 export const getCandidateInvitations = (params: InvitationParams) => {
   return apiClient("/invitations/candidate/my-invitations", {
-    params
+    params,
   });
-}
+};
+
+export const responseInvitaton = (
+  invitationId: string,
+  payload: IInvitationResponsePayload,
+) => {
+  return apiClient(`/invitations/${invitationId}/respond`, {
+    method: "PATCH",
+    body: payload,
+  });
+};

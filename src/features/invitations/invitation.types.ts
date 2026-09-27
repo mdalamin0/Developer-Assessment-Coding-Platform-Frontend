@@ -1,7 +1,6 @@
 import { AssessmentStatus } from "../assessments/assessment.types";
 
-export type InvitationStatus = "PENDING" | "ACCEPTED" | "DECLINED" | "EXPIRED"
-
+export type InvitationStatus = "PENDING" | "ACCEPTED" | "DECLINED" | "EXPIRED";
 
 export interface InvitationAssessment {
   id: string;
@@ -39,5 +38,9 @@ export interface InvitationParams {
   limit?: number;
   searchTerm?: string;
   sortOrder?: "desc" | "asc";
-  status?: InvitationStatus
+  status?: InvitationStatus;
+}
+
+export interface IInvitationResponsePayload {
+  status: "ACCEPTED" | "DECLINED";
 }
