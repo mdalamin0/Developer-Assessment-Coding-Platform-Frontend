@@ -32,7 +32,7 @@ export default function RoleGuard({ children, roles }: IProps) {
   }
 
   if (isError || !user) {
-    return <AuthLoading label="Redirecting..." />;
+    return <AuthLoading label="Redirecting" />;
   }
 
   if (isAuthorized) {

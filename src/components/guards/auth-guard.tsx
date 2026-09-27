@@ -28,7 +28,7 @@ export default function AuthGuard({ children }: { children: ReactNode }) {
   }
 
   if (isError || !user) {
-    return <AuthLoading label="Redirecting..." />;
+    return <AuthLoading label="Redirecting" />;
   }
 
   return <>{children}</>;

@@ -30,11 +30,11 @@ export const recruiterRoutes = [
     href: "/recruiter/candidates",
     icon: UserPlus,
   },
-  {
-    label: "Evaluations",
-    href: "/recruiter/evaluations",
-    icon: FileText,
-  },
+  // {
+  //   label: "Evaluations",
+  //   href: "/recruiter/evaluations",
+  //   icon: FileText,
+  // },
   {
     label: "Results",
     href: "/recruiter/results",

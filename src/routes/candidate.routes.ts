@@ -18,7 +18,7 @@ export const candidateRoutes = [
     icon: ClipboardCheck,
   },
   {
-    label: "Invitations",
+    label: "My Invitations",
     href: "/candidate/invitations",
     icon: FileText,
   },
