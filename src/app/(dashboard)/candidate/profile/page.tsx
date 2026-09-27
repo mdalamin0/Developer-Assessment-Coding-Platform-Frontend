@@ -2,8 +2,8 @@
 
 import ProfilePage from "@/features/profile/components/profile-page";
 
-const RecruiterProfilePage = () => {
+const CandidateProfilePage = () => {
   return <ProfilePage />;
 };
 
-export default RecruiterProfilePage;
+export default CandidateProfilePage;

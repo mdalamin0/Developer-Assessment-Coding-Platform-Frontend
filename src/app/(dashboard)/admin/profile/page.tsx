@@ -1,9 +1,7 @@
-
-
 import ProfilePage from "@/features/profile/components/profile-page";
 
-const RecruiterProfilePage = () => {
+const AdminProfilePage = () => {
   return <ProfilePage />;
 };
 
-export default RecruiterProfilePage;
+export default AdminProfilePage;
