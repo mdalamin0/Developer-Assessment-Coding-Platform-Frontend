@@ -29,12 +29,8 @@ interface SubmissionResult {
 
 const CandidateAttemptPage = () => {
   const params = useParams();
-  const router = useRouter();
-
   const attemptId = params.attemptId as string;
-
   const { data, isLoading, isError } = useGetAttemptQuestions(attemptId);
-
   const { mutate: submitAnswer, isPending: isSubmittingAnswer } =
     useSubmitAnswer();
 
@@ -43,20 +39,15 @@ const CandidateAttemptPage = () => {
 
   const attemptData = data?.data;
   const questions = attemptData?.questions ?? [];
-
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-
   const [selectedAnswer, setSelectedAnswer] = useState("");
-
   const [timeLeft, setTimeLeft] = useState(0);
 
   const [submissionResult, setSubmissionResult] =
     useState<SubmissionResult | null>(null);
 
   const currentQuestion = questions[currentQuestionIndex];
-
   const totalQuestions = questions.length;
-
   const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
 
   const progress =
