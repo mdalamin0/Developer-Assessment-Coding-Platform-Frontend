@@ -36,6 +36,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { FetchError } from "ofetch";
 import Modal from "@/components/shared/modal";
+import { useStartAssessment } from "@/features/assessments/hooks/assessments.hooks";
+import { useRouter } from "next/navigation";
 
 const statusTabs = [
   { value: "ALL", label: "All" },
@@ -49,6 +51,7 @@ const CandidateInvitationsPage = () => {
   const [page, setPage] = useState(1);
   const [tab, setTab] = useState<"ALL" | InvitationStatus>("ALL");
   const debouncedSearch = useDebounce(search);
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const [declineModalOpen, setDeclineModalOpen] = useState(false);
@@ -57,6 +60,8 @@ const CandidateInvitationsPage = () => {
 
   const { mutate: responseInvitation, isPending: isResponding } =
     useResponseInvitation();
+  const { mutate: startAssessment, isPending: isStarting } =
+    useStartAssessment();
 
   const queryParams = {
     page,
@@ -150,6 +155,27 @@ const CandidateInvitationsPage = () => {
               error.data?.message ||
                 `Failed to ${status.toLowerCase()} invitation!`,
             );
+            return;
+          }
+
+          toast.error("Something went wrong!");
+        },
+      },
+    );
+  };
+
+  const handleStartAssessment = (assessmentId: string) => {
+    startAssessment(
+      {
+        assessmentId,
+      },
+      {
+        onSuccess: (response) => {
+          router.push(`/candidate/attempts/${response.data.attempt.id}`);
+        },
+        onError: (error) => {
+          if (error instanceof FetchError) {
+            toast.error(error.data?.message || "Failed to start assessment!");
             return;
           }
 
@@ -351,8 +377,19 @@ const CandidateInvitationsPage = () => {
 
                               {invitation.status === "ACCEPTED" &&
                                 invitation.assessment.status === "ONGOING" && (
-                                  <Button size="sm" className="gap-1.5">
-                                    Start Assessment
+                                  <Button
+                                    size="sm"
+                                    className="gap-1.5"
+                                    disabled={isStarting}
+                                    onClick={() =>
+                                      handleStartAssessment(
+                                        invitation.assessment.id,
+                                      )
+                                    }
+                                  >
+                                    {isStarting
+                                      ? "Starting..."
+                                      : "Start Assessment"}
                                   </Button>
                                 )}
 
@@ -510,8 +547,15 @@ const CandidateInvitationsPage = () => {
 
                       {invitation.status === "ACCEPTED" &&
                         invitation.assessment.status === "ONGOING" && (
-                          <Button size="sm" className="w-full">
-                            Start Assessment
+                          <Button
+                            size="sm"
+                            className="gap-1.5"
+                            disabled={isStarting}
+                            onClick={() =>
+                              handleStartAssessment(invitation.assessment.id)
+                            }
+                          >
+                            {isStarting ? "Starting..." : "Start Assessment"}
                           </Button>
                         )}
 

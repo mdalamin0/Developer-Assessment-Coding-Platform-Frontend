@@ -6,6 +6,7 @@ import {
   getSingleAssessment,
   handlePaymentAssessment,
   publishAssessment,
+  startAssessment,
   updateAssessment,
 } from "../assessment.api";
 import {
@@ -70,5 +71,12 @@ export const usePublishAssessment = () => {
   return useMutation({
     mutationFn: ({ assessmentId }: { assessmentId: string }) =>
       publishAssessment(assessmentId),
+  });
+};
+
+export const useStartAssessment = () => {
+  return useMutation({
+    mutationFn: ({ assessmentId }: { assessmentId: string }) =>
+      startAssessment(assessmentId),
   });
 };

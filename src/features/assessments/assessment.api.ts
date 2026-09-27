@@ -43,7 +43,6 @@ export const addProblemInAssessment = (
   });
 };
 
-
 export const handlePaymentAssessment = (assessmentId: string) => {
   return apiClient("/payment/create-payment", {
     method: "POST",
@@ -51,10 +50,16 @@ export const handlePaymentAssessment = (assessmentId: string) => {
       assessmentId,
     },
   });
-}
+};
 
 export const publishAssessment = (assessmentId: string) => {
   return apiClient(`/assessments/${assessmentId}/publish`, {
-    method: "PATCH"
+    method: "PATCH",
   });
-}
+};
+
+export const startAssessment = (assessmentId: string) => {
+  return apiClient(`/attempts/${assessmentId}/start`, {
+    method: "POST",
+  });
+};
