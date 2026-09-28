@@ -1,13 +1,7 @@
-import {
-  BriefcaseBusiness,
-  FileText,
-
-  Phone,
-} from "lucide-react";
-import { CandidateProfileProps } from "../profile.types";
+import { BriefcaseBusiness, FileText, Phone } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
-
+import { CandidateProfileProps } from "../profile.types";
 
 const CandidateProfile = ({ profile }: CandidateProfileProps) => {
   return (
@@ -22,7 +16,17 @@ const CandidateProfile = ({ profile }: CandidateProfileProps) => {
       </div>
 
       <div className="app-card-content">
-        <div className="grid gap-5 sm:grid-cols-2">
+        {/* About */}
+        <div className="border-b border-border/60 pb-6">
+          <p className="text-xs font-medium text-muted-foreground">About</p>
+
+          <p className="mt-2 text-sm leading-6 text-foreground/80">
+            {profile.bio || "No bio added yet."}
+          </p>
+        </div>
+
+        {/* Professional Information */}
+        <div className="grid gap-5 border-b border-border/60 py-6 sm:grid-cols-2">
           <div className="flex items-start gap-3">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
               <Phone className="size-4 text-muted-foreground" />
@@ -30,6 +34,7 @@ const CandidateProfile = ({ profile }: CandidateProfileProps) => {
 
             <div>
               <p className="text-xs text-muted-foreground">Contact Number</p>
+
               <p className="mt-1 font-medium">
                 {profile.contactNumber || "Not added"}
               </p>
@@ -43,15 +48,18 @@ const CandidateProfile = ({ profile }: CandidateProfileProps) => {
 
             <div>
               <p className="text-xs text-muted-foreground">Experience</p>
+
               <p className="mt-1 font-medium">
-                {profile.experience || "Not added"}
+                {profile.experience
+                  ? `${profile.experience} years`
+                  : "Not added"}
               </p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
-              <FaGithub/>
+              <FaGithub className="size-4" />
             </div>
 
             <div className="min-w-0">
@@ -64,7 +72,7 @@ const CandidateProfile = ({ profile }: CandidateProfileProps) => {
                   rel="noopener noreferrer"
                   className="mt-1 block truncate font-medium text-primary hover:underline"
                 >
-                  View Github
+                  View GitHub
                 </a>
               ) : (
                 <p className="mt-1 font-medium">Not added</p>
@@ -74,7 +82,7 @@ const CandidateProfile = ({ profile }: CandidateProfileProps) => {
 
           <div className="flex items-start gap-3">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
-              <FaLinkedin/>
+              <FaLinkedin className="size-4" />
             </div>
 
             <div className="min-w-0">
@@ -87,7 +95,7 @@ const CandidateProfile = ({ profile }: CandidateProfileProps) => {
                   rel="noopener noreferrer"
                   className="mt-1 block truncate font-medium text-primary hover:underline"
                 >
-                  View Linkedin
+                  View LinkedIn
                 </a>
               ) : (
                 <p className="mt-1 font-medium">Not added</p>
@@ -96,20 +104,11 @@ const CandidateProfile = ({ profile }: CandidateProfileProps) => {
           </div>
         </div>
 
-        {profile.bio && (
-          <div className="mt-6 border-t border-border/60 pt-6">
-            <p className="text-xs font-medium text-muted-foreground">About</p>
+        {/* Skills */}
+        <div className="border-b border-border/60 py-6">
+          <p className="text-xs font-medium text-muted-foreground">Skills</p>
 
-            <p className="mt-2 text-sm leading-6 text-foreground/80">
-              {profile.bio}
-            </p>
-          </div>
-        )}
-
-        {profile.skills.length > 0 && (
-          <div className="mt-6 border-t border-border/60 pt-6">
-            <p className="text-xs font-medium text-muted-foreground">Skills</p>
-
+          {profile.skills.length > 0 ? (
             <div className="mt-3 flex flex-wrap gap-2">
               {profile.skills.map((skill) => (
                 <span
@@ -120,22 +119,33 @@ const CandidateProfile = ({ profile }: CandidateProfileProps) => {
                 </span>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <p className="mt-2 text-sm text-muted-foreground">
+              No skills added yet.
+            </p>
+          )}
+        </div>
 
-        {profile.resumeUrl && (
-          <div className="mt-6 border-t border-border/60 pt-6">
+        {/* Resume */}
+        <div className="pt-6">
+          <p className="text-xs font-medium text-muted-foreground">Resume</p>
+
+          {profile.resumeUrl ? (
             <a
               href={profile.resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+              className="mt-3 inline-flex items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
             >
-              <FileText className="size-4" />
+              <FileText className="size-4 text-primary" />
               View Resume
             </a>
-          </div>
-        )}
+          ) : (
+            <p className="mt-2 text-sm text-muted-foreground">
+              No resume uploaded yet.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

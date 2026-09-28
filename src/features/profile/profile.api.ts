@@ -6,3 +6,10 @@ export const updateProfileImage = (formData: FormData) => {
     body: formData,
   });
 };
+
+export const updateCandidateProfile = (formData: FormData) => {
+  return apiClient("/candidates/me", {
+    method: "PATCH",
+    body: formData,
+  });
+};

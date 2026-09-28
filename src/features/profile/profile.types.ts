@@ -16,26 +16,77 @@ export interface ProfileHeaderProps {
   onEdit: () => void;
 }
 
-export interface CandidateProfileProps {
-  profile: {
-    contactNumber: string | null;
-    bio: string | null;
-    resumeUrl: string | null;
-    skills: string[];
-    experience: string | null;
-    githubUrl: string | null;
-    linkedinUrl: string | null;
-  };
+
+export interface CandidateProfile {
+  contactNumber: string | null;
+  bio: string | null;
+  resumeUrl: string | null;
+  skills: string[];
+  experience: number | string | null;
+  githubUrl: string | null;
+  linkedinUrl: string | null;
+}
+
+export interface RecruiterProfile {
+  companyName: string;
+  companyWebsite: string | null;
+  companyLogo: string | null;
+  companyDescription: string | null;
+  designation: string | null;
+  linkedinUrl?: string | null;
 }
 
 
+
+export interface CandidateProfileProps {
+  profile: CandidateProfile;
+}
+
 export interface RecruiterProfileProps {
-  profile: {
-    companyName: string;
-    companyWebsite: string | null;
-    companyLogo: string | null;
-    companyDescription: string | null;
-    designation: string | null;
-    linkedinUrl?: string | null;
-  };
+  profile: RecruiterProfile;
+}
+
+
+  //  Edit Profile
+export interface CandidateEditFormProps {
+  name: string;
+  email: string;
+  contactNumber: string | null;
+  bio: string | null;
+  skills: string[];
+  experience: number | string | null;
+  githubUrl: string | null;
+  linkedinUrl: string | null;
+  resumeUrl: string | null;
+  onSuccess: () => void;
+}
+
+  //  Edit Profile Modal
+export type CandidateUser = {
+  name: string;
+  email: string;
+  role: "CANDIDATE";
+  profile: CandidateProfile;
+};
+
+export type RecruiterUser = {
+  name: string;
+  email: string;
+  role: "RECRUITER";
+  profile: RecruiterProfile;
+};
+
+export type AdminUser = {
+  name: string;
+  email: string;
+  role: "ADMIN";
+  profile?: null;
+};
+
+export type UserProfile = CandidateUser | RecruiterUser | AdminUser;
+
+export interface EditProfileModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  user: UserProfile;
 }

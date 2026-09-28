@@ -1,20 +1,16 @@
 "use client";
 
 import { useState } from "react";
-
-
-
 import ProfileHeader from "./profile-header";
 import ProfileAccountInfo from "./profile-account-info";
 import CandidateProfile from "./candidate-profile";
 import RecruiterProfile from "./recruiter-profile";
 import { useGetMe } from "@/features/auth/hooks";
+import EditProfileModal from "./edit-profile-modal";
 
 const ProfilePage = () => {
   const { data } = useGetMe();
-
   const user = data?.data;
-
   const [editOpen, setEditOpen] = useState(false);
 
   if (!user) return null;
@@ -61,12 +57,11 @@ const ProfilePage = () => {
           </div>
         </div>
       </section>
-{/* 
       <EditProfileModal
         open={editOpen}
         onOpenChange={setEditOpen}
         user={user}
-      /> */}
+      />
     </>
   );
 };
