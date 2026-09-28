@@ -13,3 +13,10 @@ export const updateCandidateProfile = (formData: FormData) => {
     body: formData,
   });
 };
+
+export const updateRecruiterProfile = (formData: FormData) => {
+  return apiClient("/recruiters/me", {
+    method: "PATCH",
+    body: formData,
+  });
+};

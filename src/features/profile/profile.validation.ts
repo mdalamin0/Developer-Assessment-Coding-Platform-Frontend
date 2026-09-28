@@ -47,3 +47,36 @@ export const candidateFormSchema = z.object({
 
   resume: z.instanceof(File).nullable(),
 });
+
+export const recruiterFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must not exceed 100 characters"),
+
+  companyName: z
+    .string()
+    .trim()
+    .min(2, "Company name must be at least 2 characters")
+    .max(150, "Company name must not exceed 150 characters"),
+
+  companyWebsite: z
+    .string()
+    .trim()
+    .url("Enter a valid company website URL")
+    .or(z.literal("")),
+
+  companyDescription: z
+    .string()
+    .max(1000, "Company description must not exceed 1000 characters")
+    .or(z.literal("")),
+
+  designation: z
+    .string()
+    .trim()
+    .max(100, "Designation must not exceed 100 characters")
+    .or(z.literal("")),
+
+  companyLogo: z.instanceof(File).nullable(),
+});

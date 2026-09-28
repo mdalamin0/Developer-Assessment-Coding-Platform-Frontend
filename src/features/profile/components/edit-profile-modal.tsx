@@ -2,6 +2,7 @@
 import Modal from "@/components/shared/modal";
 import CandidateEditForm from "./candidate-edit-form";
 import { EditProfileModalProps } from "../profile.types";
+import RecruiterEditForm from "./recruiter-edit-form";
 
 
 const EditProfileModal = ({
@@ -36,10 +37,16 @@ const EditProfileModal = ({
         />
       )}{" "}
       {user.role === "RECRUITER" && (
-        <div className="py-8 text-center text-sm text-muted-foreground">
-          {" "}
-          Recruiter profile form will be added here.{" "}
-        </div>
+        <RecruiterEditForm
+          name={user.name}
+          email={user.email}
+          companyName={user.profile.companyName}
+          companyWebsite={user.profile.companyWebsite}
+          companyDescription={user.profile.companyDescription}
+          designation={user.profile.designation}
+          companyLogo={user.profile.companyLogo}
+          onSuccess={handleSuccess}
+        />
       )}{" "}
       {user.role === "ADMIN" && (
         <div className="py-8 text-center text-sm text-muted-foreground">

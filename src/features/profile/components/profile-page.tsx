@@ -49,11 +49,11 @@ const ProfilePage = () => {
               {user.role === "CANDIDATE" && user.profile && (
                 <CandidateProfile profile={user.profile} />
               )}
-            </div>
 
-            {user.role === "RECRUITER" && user.profile && (
-              <RecruiterProfile profile={user.profile} />
-            )}
+              {user.role === "RECRUITER" && user.profile && (
+                <RecruiterProfile profile={user.profile} />
+              )}
+            </div>
           </div>
         </div>
       </section>
