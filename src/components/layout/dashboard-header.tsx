@@ -1,7 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, ChevronDown, LogOut, Menu, UserRound } from "lucide-react";
+import {
+  Bell,
+  ChevronDown,
+  LogOut,
+  Menu,
+  UserRound,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/shared/theme-toggle";
@@ -14,15 +23,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useLogout } from "@/features/auth/hooks";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 interface DashboardHeaderProps {
   user?: {
     name?: string;
     email?: string;
     image?: string;
+    role?: "CANDIDATE" | "RECRUITER" | "ADMIN";
   };
   onMenuClick?: () => void;
 }
@@ -32,11 +39,12 @@ export default function DashboardHeader({
   onMenuClick,
 }: DashboardHeaderProps) {
   const router = useRouter();
-   const { mutate: logout } = useLogout();
-   const queryClient = useQueryClient();
+  const { mutate: logout } = useLogout();
+  const queryClient = useQueryClient();
 
   const name = user?.name || "User";
   const email = user?.email || "";
+
   const initials = name
     .split(" ")
     .map((part) => part[0])
@@ -44,26 +52,33 @@ export default function DashboardHeader({
     .slice(0, 2)
     .toUpperCase();
 
-  
+  const profileRoute =
+    user?.role === "CANDIDATE"
+      ? "/candidate/profile"
+      : user?.role === "RECRUITER"
+        ? "/recruiter/profile"
+        : user?.role === "ADMIN"
+          ? "/admin/profile"
+          : "/profile";
 
-     const handleLogout = () => {
-       logout(undefined, {
-         onSuccess: () => {
-             queryClient.setQueryData(["user"], null);
+  const handleLogout = () => {
+    logout(undefined, {
+      onSuccess: () => {
+        queryClient.setQueryData(["user"], null);
 
-             toast.success("Logged out successfully");
+        toast.success("Logged out successfully");
 
-             router.replace("/login");
-             router.refresh();
-         },
-         onError: () => {
-           toast.error("Log Out Failed", {
-             id: "logout",
-             description: "Something went wrong, Please try again.",
-           });
-         },
-       });
-     };
+        router.replace("/login");
+        router.refresh();
+      },
+      onError: () => {
+        toast.error("Log Out Failed", {
+          id: "logout",
+          description: "Something went wrong, Please try again.",
+        });
+      },
+    });
+  };
 
   return (
     <header className="sticky top-0 z-30 h-16 border-b border-border/60 bg-background/80 backdrop-blur-xl">
@@ -81,7 +96,7 @@ export default function DashboardHeader({
           </Button>
 
           <div className="hidden min-w-0 sm:block">
-            <p className="truncate text- font-medium text-foreground">
+            <p className="font-medium text-foreground">
               Welcome back, {name.split(" ")[0]} 👋
             </p>
 
@@ -113,7 +128,7 @@ export default function DashboardHeader({
               render={
                 <Button
                   variant="ghost"
-                  className="h-10 gap-2  px-2 hover:bg-accent"
+                  className="h-10 gap-2 px-2 hover:bg-accent"
                 />
               }
             >
@@ -126,7 +141,9 @@ export default function DashboardHeader({
               </Avatar>
 
               <div className="hidden min-w-0 text-left sm:block">
-                <p className="max-w-32 truncate text-sm font-medium">{name}</p>
+                <p className="max-w-32 truncate text-sm font-medium">
+                  {name}
+                </p>
 
                 <p className="max-w-32 truncate text-[11px] text-muted-foreground">
                   {email}
@@ -139,6 +156,7 @@ export default function DashboardHeader({
             <DropdownMenuContent align="end" className="w-56">
               <div className="px-2 py-2">
                 <p className="truncate text-sm font-semibold">{name}</p>
+
                 <p className="truncate text-xs text-muted-foreground">
                   {email}
                 </p>
@@ -146,14 +164,17 @@ export default function DashboardHeader({
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem render={<Link href="/profile" />}>
+              <DropdownMenuItem render={<Link href={profileRoute} />}>
                 <UserRound className="size-4" />
                 Profile
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem onClick={handleLogout} className=" text-destructive focus:text-destructive">
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-destructive focus:text-destructive"
+              >
                 <LogOut className="size-4" />
                 Logout
               </DropdownMenuItem>
@@ -164,3 +185,4 @@ export default function DashboardHeader({
     </header>
   );
 }
+;

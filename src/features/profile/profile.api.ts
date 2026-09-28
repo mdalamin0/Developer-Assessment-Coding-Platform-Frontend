@@ -20,3 +20,10 @@ export const updateRecruiterProfile = (formData: FormData) => {
     body: formData,
   });
 };
+
+export const updateAdminProfile = (data: { name: string }) => {
+  return apiClient("/admin/me", {
+    method: "PATCH",
+    body: data,
+  });
+};

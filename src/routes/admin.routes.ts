@@ -1,8 +1,4 @@
-import {
-  History,
-  LayoutDashboard,
-  Users,
-} from "lucide-react";
+import { History, LayoutDashboard, UserRound, Users } from "lucide-react";
 
 export const adminRoutes = [
   {
@@ -19,5 +15,10 @@ export const adminRoutes = [
     label: "Audit Logs",
     href: "/admin/audit-logs",
     icon: History,
+  },
+  {
+    label: "Profile",
+    href: "/admin/profile",
+    icon: UserRound,
   },
 ];

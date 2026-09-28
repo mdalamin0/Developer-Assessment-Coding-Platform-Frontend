@@ -72,6 +72,12 @@ export interface RecruiterEditFormProps {
   onSuccess: () => void;
 }
 
+export interface AdminEditFormProps {
+  name: string;
+  email: string;
+  onSuccess: () => void;
+}
+
   //  Edit Profile Modal
 export type CandidateUser = {
   name: string;

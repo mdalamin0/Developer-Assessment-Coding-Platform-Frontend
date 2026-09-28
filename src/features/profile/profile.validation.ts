@@ -80,3 +80,11 @@ export const recruiterFormSchema = z.object({
 
   companyLogo: z.instanceof(File).nullable(),
 });
+
+export const adminFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must not exceed 100 characters"),
+});
