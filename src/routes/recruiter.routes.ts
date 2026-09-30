@@ -30,16 +30,6 @@ export const recruiterRoutes = [
     href: "/recruiter/candidates",
     icon: UserPlus,
   },
-  // {
-  //   label: "Evaluations",
-  //   href: "/recruiter/evaluations",
-  //   icon: FileText,
-  // },
-  {
-    label: "Results",
-    href: "/recruiter/results",
-    icon: BarChart3,
-  },
   {
     label: "Payments",
     href: "/recruiter/payments",

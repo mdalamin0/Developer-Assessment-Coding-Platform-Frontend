@@ -387,51 +387,49 @@ const RecruiterAssessmentsPage = () => {
                     </div>
 
                     <div className="  border-t border-border/60 pt-4 ">
-                      <div className="flex justify-center md:justify-around flex-wrap items-center gap-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedAssessment(assessment);
-                            setAssessmentModalOpen(true);
-                          }}
-                        >
-                          <Pencil className="mr-2 size-4" />
-                          Edit
-                        </Button>
-
+                      <div className="flex  flex-wrap items-center justify-between gap-2">
                         {/* Add Problems */}
-                        <Button
-                          render={
-                            <Link
-                              href={`/recruiter/assessments/${assessment.id}/problems`}
-                            ></Link>
-                          }
-                          nativeButton={false}
-                          size="sm"
-                          variant="outline"
-                          className="gap-1.5"
-                        >
-                          <Plus className="size-3.5" />
-                          Add Problems
-                        </Button>
+                        <div>
+                          <Button
+                            render={
+                              <Link
+                                href={`/recruiter/assessments/${assessment.id}/problems`}
+                              ></Link>
+                            }
+                            nativeButton={false}
+                            size="sm"
+                            variant="outline"
+                            className="gap-1.5"
+                          >
+                            <Plus className="size-3.5" />
+                            Add Problems
+                          </Button>
+                        </div>
 
-                        {/* View Details */}
-                        <Button size="sm" variant="outline">
-                          View Details
-                          <ArrowRight className="size-3.5" />
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon-sm"
+                            onClick={() => {
+                              setSelectedAssessment(assessment);
+                              setAssessmentModalOpen(true);
+                            }}
+                          >
+                            <Pencil className="" />
+                     
+                          </Button>
 
-                        {/* Delete */}
-                        <Button
-                          size="icon-sm"
-                          variant="outline"
-                          className="text-destructive hover:text-destructive"
-                          title="Delete Assessment"
-                        >
-                          <Trash2 />
-                        </Button>
+                          {/* Delete */}
+                          <Button
+                            size="icon-sm"
+                            variant="outline"
+                            className="text-destructive hover:text-destructive"
+                            title="Delete Assessment"
+                          >
+                            <Trash2 />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
