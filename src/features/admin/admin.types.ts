@@ -7,6 +7,7 @@ export interface AdminUsersQuery {
   limit?: number;
   searchTerm?: string;
   status?: UserStatus;
+  sortOrder?: "asc" | "desc";
 }
 
 export interface AdminUser {

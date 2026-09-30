@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { AdminUsersQuery, AuditLogsQuery, UserStatus } from "../admin.types";
-import { getAdminUsers, getAuditLogs, updateUserStatus } from "../admin.api";
+import { getAdminUsers, getAllAssessments, getAuditLogs, updateUserStatus } from "../admin.api";
+import { AssessmentParams } from "@/features/assessments/assessment.types";
 
 export const useGetAdminUsers = (params: AdminUsersQuery) => {
   return useQuery({
@@ -33,5 +34,12 @@ export const useGetAuditLogs = (params: AuditLogsQuery) => {
   return useQuery({
     queryKey: ["audit-logs", params],
     queryFn: () => getAuditLogs(params),
+  });
+};
+
+export const useGetAllAssessments = (params: AssessmentParams) => {
+  return useQuery({
+    queryKey: ["assessments", params],
+    queryFn: () => getAllAssessments(params),
   });
 };
