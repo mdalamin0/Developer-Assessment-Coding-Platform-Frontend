@@ -129,7 +129,7 @@ const recentLogs = auditLogs?.data?.data?.slice(0, 3) ?? [];
         </section>
 
         {/* Recent Assessments */}
-        <section className="space-y-4">
+        <section className="min-w-0 space-y-4">
           <SectionHeader
             title="Recent Assessments"
             description="Latest assessments created on the platform."
@@ -139,7 +139,7 @@ const recentLogs = auditLogs?.data?.data?.slice(0, 3) ?? [];
                 size="sm"
                 nativeButton={false}
                 render={<Link href="/admin/audit-logs" />}
-                className="gap-1.5"
+                className="shrink-0 gap-1.5"
               >
                 View activity
                 <ArrowRight className="size-3.5" />
@@ -147,25 +147,26 @@ const recentLogs = auditLogs?.data?.data?.slice(0, 3) ?? [];
             }
           />
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid min-w-0 gap-4 lg:grid-cols-2">
             {assessments?.data?.data
               .slice(0, 2)
               .map((assessment: ProblemDataType) => (
                 <div
                   key={assessment.id}
-                  className="group rounded-2xl border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                  className="group min-w-0 overflow-hidden rounded-2xl border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex min-w-0 items-start gap-3">
+                  <div className="flex min-w-0 items-start justify-between gap-3">
+                    <div className="flex min-w-0 flex-1 items-start gap-3">
                       <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500">
                         <ClipboardCheck className="size-5" strokeWidth={1.8} />
                       </div>
 
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <h3 className="truncate font-semibold">
                           {assessment.title}
                         </h3>
-                        <p className="mt-1 text-sm text-muted-foreground">
+
+                        <p className="mt-1 truncate text-sm text-muted-foreground">
                           Created by {assessment.recruiter.companyName}
                         </p>
                       </div>
@@ -176,9 +177,12 @@ const recentLogs = auditLogs?.data?.data?.slice(0, 3) ?? [];
                     </span>
                   </div>
 
-                  <div className="mt-5 flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Total Problem: {assessment.problemCount ?? 0} </span>
-                    <span>
+                  <div className="mt-5 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                    <span className="shrink-0">
+                      Total Problems: {assessment.problemCount ?? 0}
+                    </span>
+
+                    <span className="shrink-0">
                       {formatDistanceToNow(new Date(assessment.createdAt), {
                         addSuffix: true,
                       })}

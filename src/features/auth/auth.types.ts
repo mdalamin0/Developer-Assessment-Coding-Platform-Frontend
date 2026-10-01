@@ -31,3 +31,8 @@ export interface resendVerificationPayload {
   email: string;
 }
 
+export interface resetPasswordPayload {
+  email: string;
+  newPassword: string;
+  otp: string;
+}

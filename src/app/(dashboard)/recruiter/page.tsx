@@ -79,7 +79,7 @@ const RecruiterDashboard = () => {
                 size="sm"
                 nativeButton={false}
                 render={<Link href="/recruiter/assessments" />}
-                className="gap-1.5"
+                className="shrink-0 gap-1.5"
               >
                 View all
                 <ArrowRight className="size-3.5" />
@@ -87,25 +87,26 @@ const RecruiterDashboard = () => {
             }
           />
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid min-w-0 gap-4 lg:grid-cols-2">
             {assessments?.data?.data
               ?.slice(0, 2)
               .map((assessment: ProblemDataType) => (
                 <div
                   key={assessment.id}
-                  className="group rounded-2xl border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                  className="min-w-0 rounded-2xl border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
                 >
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex min-w-0 items-start justify-between gap-3">
                     <div className="flex min-w-0 items-start gap-3">
                       <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500">
                         <ClipboardCheck className="size-5" strokeWidth={1.8} />
                       </div>
 
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <h3 className="truncate font-semibold">
                           {assessment.title}
                         </h3>
-                        <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
+
+                        <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                           {assessment.description}
                         </p>
                       </div>
@@ -116,13 +117,13 @@ const RecruiterDashboard = () => {
                     </span>
                   </div>
 
-                  <div className="mt-5 flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
+                  <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                    <span className="flex shrink-0 items-center gap-1.5">
                       <Users className="size-3.5" />
                       {assessment.problemCount} problems
                     </span>
 
-                    <span className="flex items-center gap-1.5">
+                    <span className="flex shrink-0 items-center gap-1.5">
                       <Clock3 className="size-3.5" />
                       {assessment.duration} min
                     </span>
@@ -138,7 +139,7 @@ const RecruiterDashboard = () => {
                           href={`/recruiter/assessments/${assessment.id}/problems`}
                         />
                       }
-                      className="gap-1.5"
+                      className="w-full gap-1.5 sm:w-auto"
                     >
                       View assessment
                       <ArrowRight className="size-3.5" />
@@ -170,58 +171,60 @@ const RecruiterDashboard = () => {
 
           <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
             <div className="divide-y">
-              {candidatesData?.data?.data?.slice(0, 2).map((candidate: CandidateData) => (
-                <div
-                  key={candidate.id}
-                  className="flex items-center justify-between gap-4 p-5"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    {candidate.image ? (
-                      <img
-                        src={candidate.image}
-                        alt={candidate.name}
-                        className="size-10 shrink-0 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                        {candidate.name
-                          .split(" ")
-                          .map((name) => name[0])
-                          .join("")
-                          .slice(0, 2)
-                          .toUpperCase()}
-                      </div>
-                    )}
+              {candidatesData?.data?.data
+                ?.slice(0, 2)
+                .map((candidate: CandidateData) => (
+                  <div
+                    key={candidate.id}
+                    className="flex items-center justify-between gap-4 p-5"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      {candidate.image ? (
+                        <img
+                          src={candidate.image}
+                          alt={candidate.name}
+                          className="size-10 shrink-0 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                          {candidate.name
+                            .split(" ")
+                            .map((name) => name[0])
+                            .join("")
+                            .slice(0, 2)
+                            .toUpperCase()}
+                        </div>
+                      )}
 
-                    <div className="min-w-0">
-                      <h3 className="truncate text-sm font-semibold">
-                        {candidate.name}
-                      </h3>
-                      <p className="mt-1 truncate text-xs text-muted-foreground">
-                        {candidate.candidate.skills?.length
-                          ? candidate.candidate.skills.slice(0, 3).join(", ")
-                          : candidate.email}
+                      <div className="min-w-0">
+                        <h3 className="truncate text-sm font-semibold">
+                          {candidate.name}
+                        </h3>
+                        <p className="mt-1 truncate text-xs text-muted-foreground">
+                          {candidate.candidate.skills?.length
+                            ? candidate.candidate.skills.slice(0, 3).join(", ")
+                            : candidate.email}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0 text-right">
+                      <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                        {candidate.status}
+                      </span>
+                      <p className="mt-2 text-[11px] text-muted-foreground">
+                        {new Date(candidate.createdAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          },
+                        )}
                       </p>
                     </div>
                   </div>
-
-                  <div className="shrink-0 text-right">
-                    <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                      {candidate.status}
-                    </span>
-                    <p className="mt-2 text-[11px] text-muted-foreground">
-                      {new Date(candidate.createdAt).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        },
-                      )}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </section>

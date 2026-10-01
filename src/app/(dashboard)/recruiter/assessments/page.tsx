@@ -183,7 +183,7 @@ const RecruiterAssessmentsPage = () => {
         </div>
 
         {/* Search & Status */}
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <DataSearch
             value={search}
             onChange={handleSearchChange}
@@ -417,7 +417,6 @@ const RecruiterAssessmentsPage = () => {
                             }}
                           >
                             <Pencil className="" />
-                     
                           </Button>
 
                           {/* Delete */}

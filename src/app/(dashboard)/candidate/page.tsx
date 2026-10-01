@@ -114,7 +114,7 @@ const CandidateDashboard = () => {
         </div>
 
         {/* Recent Assessments */}
-        <section className="space-y-4">
+        <section className="min-w-0 space-y-4">
           <SectionHeader
             title="Recent Assessments"
             description="Assessments you've been invited to."
@@ -123,8 +123,8 @@ const CandidateDashboard = () => {
                 variant="outline"
                 size="sm"
                 nativeButton={false}
-                render={<Link href={'/candidate/assessments'} />}
-                className="gap-1.5"
+                render={<Link href="/candidate/assessments" />}
+                className="shrink-0 gap-1.5"
               >
                 View all
                 <ArrowRight className="size-3.5" />
@@ -133,84 +133,92 @@ const CandidateDashboard = () => {
           />
 
           {invitationsLoading ? (
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="grid min-w-0 gap-4 lg:grid-cols-2">
               {[1, 2].map((item) => (
                 <div
                   key={item}
-                  className="h-48 animate-pulse rounded-2xl border bg-muted/40"
+                  className="h-48 min-w-0 animate-pulse rounded-2xl border bg-muted/40"
                 />
               ))}
             </div>
           ) : recentInvitations.length === 0 ? (
             <div className="rounded-2xl border bg-card p-8 text-center">
               <ClipboardCheck className="mx-auto size-8 text-muted-foreground" />
+
               <h3 className="mt-3 font-semibold">No assessments yet</h3>
+
               <p className="mt-1 text-sm text-muted-foreground">
                 Your assigned assessments will appear here.
               </p>
             </div>
           ) : (
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="grid min-w-0 gap-4 lg:grid-cols-2">
               {recentInvitations.map((invitation) => {
                 const status = getInvitationStatus(invitation.status);
 
                 return (
                   <div
                     key={invitation.id}
-                    className="group rounded-2xl border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                    className="group min-w-0 overflow-hidden rounded-2xl border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex min-w-0 items-start gap-3">
-                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500">
-                          <ClipboardCheck
-                            className="size-5"
-                            strokeWidth={1.8}
-                          />
-                        </div>
+                    {/* Card Header */}
+                    <div className="flex min-w-0 items-start gap-3">
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500">
+                        <ClipboardCheck className="size-5" strokeWidth={1.8} />
+                      </div>
 
-                        <div className="min-w-0">
-                          <h3 className="truncate font-semibold">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex min-w-0 flex-wrap items-center gap-2">
+                          <h3 className="min-w-0 flex-1 truncate font-semibold">
                             {invitation.assessment.title}
                           </h3>
 
-                          <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
-                            {invitation.assessment.description}
-                          </p>
+                          <span
+                            className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${status.className}`}
+                          >
+                            {status.label}
+                          </span>
                         </div>
-                      </div>
 
-                      <span
-                        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${status.className}`}
-                      >
-                        {status.label}
-                      </span>
+                        <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                          {invitation.assessment.description}
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1.5">
+                    {/* Meta */}
+                    <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                      <span className="flex shrink-0 items-center gap-1.5">
                         <Clock3 className="size-3.5" />
                         {invitation.assessment.duration} min
                       </span>
 
-                      <span>{invitation.assessment.totalMarks} marks</span>
+                      <span className="shrink-0">
+                        {invitation.assessment.totalMarks} marks
+                      </span>
 
-                      <span>Pass: {invitation.assessment.passingMarks}</span>
+                      <span className="shrink-0">
+                        Pass: {invitation.assessment.passingMarks}
+                      </span>
                     </div>
 
-                    <div className="mt-5 flex justify-end">
+                    {/* Action */}
+                    <div className="mt-5">
                       <Button
                         size="sm"
                         nativeButton={false}
                         render={
                           <Link
-                            href={`/candidate/assessments/${invitation?.assessment.id}`}
+                            href={`/candidate/assessments/${invitation.assessment.id}`}
                           />
                         }
-                        className="gap-1.5"
+                        className="w-full gap-1.5 sm:w-auto sm:float-right"
                       >
                         View assessment
                         <ArrowRight className="size-3.5" />
                       </Button>
+
+                      <div className="clear-both" />
                     </div>
                   </div>
                 );

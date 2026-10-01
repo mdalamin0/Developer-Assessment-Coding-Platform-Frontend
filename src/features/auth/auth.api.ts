@@ -3,6 +3,7 @@ import {
   LoginUserPayload,
   RegisterUserPayload,
   resendVerificationPayload,
+  resetPasswordPayload,
   VerifyEmailPayload,
 } from "./auth.types";
 
@@ -41,3 +42,17 @@ export const getMe = () => {
 export function userLogout() {
   return apiClient("/auth/logout", { method: "POST" });
 }
+
+export const forgotPassword = (email: string) => {
+  return apiClient("/auth/forgot-password", {
+    method: "POST",
+    body: { email },
+  });
+};
+
+export const resetPassword = (data: resetPasswordPayload) => {
+  return apiClient("/auth/reset-password", {
+    method: "POST",
+    body: data,
+  });
+};

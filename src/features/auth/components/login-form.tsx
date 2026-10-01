@@ -29,6 +29,24 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FetchError } from "ofetch";
 import GoogleLoginButton from "./google-login";
 
+const demoAccounts = {
+  candidate: {
+    label: "Candidate",
+    email: "mdalaminn457@gmail.com",
+    password: "Candidate@123",
+  },
+  recruiter: {
+    label: "Recruiter",
+    email: "sumaiya84857@gmail.com",
+    password: "Candidate@123",
+  },
+  admin: {
+    label: "Admin",
+    email: "testeradmin@gmail.com",
+    password: "Tester@admin12345",
+  },
+};
+
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
@@ -37,10 +55,8 @@ const LoginForm = () => {
 
   const form = useForm({
     defaultValues: {
-      email: "sumaiya84857@gmail.com",
-      password: "Candidate@123",
-      // email: "testeradmin@gmail.com",
-      // password: "Tester@admin12345",
+      email: "",
+      password: "",
     },
 
     validators: {
@@ -52,6 +68,7 @@ const LoginForm = () => {
         email: value.email,
         password: value.password,
       };
+
       login(loginData, {
         onSuccess: (res) => {
           if (!res.success) {
@@ -60,26 +77,39 @@ const LoginForm = () => {
             );
             return;
           }
+
           toast.success(res.message || "Logged in successfully!");
           router.push("/");
         },
+
         onError: (error: FetchError) => {
           console.log(error);
+
           const errorMessage =
             error?.data?.message || error?.message || "Authorization failure";
+
           toast.error(errorMessage);
         },
       });
     },
   });
 
+  const handleDemoLogin = (
+    account: (typeof demoAccounts)[keyof typeof demoAccounts],
+  ) => {
+    form.setFieldValue("email", account.email);
+    form.setFieldValue("password", account.password);
+  };
+
   useEffect(() => {
     const error = searchParams.get("error");
+
     if (error === "google-login-failed") {
-     toast.error("Google login is only available for Candidates.", {
-       description: "Please login with email and password.",
-       id: "google-login-error",
-     });
+      toast.error("Google login is only available for Candidates.", {
+        description: "Please login with email and password.",
+        id: "google-login-error",
+      });
+
       window.history.replaceState(null, "", "/login");
     }
   }, [searchParams]);
@@ -99,6 +129,51 @@ const LoginForm = () => {
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Sign in to continue to your assessment workspace.
         </p>
+      </div>
+
+      {/* 1-Click Demo Login */}
+      <div className="mb-6 rounded-2xl border border-border/60 bg-muted/30 p-2 sm:p-3">
+        <div className="mb-2.5 text-center">
+          <p className="text-xs font-semibold text-foreground">1-Click Login</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">
+            Choose a demo account to autofill credentials
+          </p>
+        </div>
+
+        <div className="flex items-center flex-wrap justify-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => handleDemoLogin(demoAccounts.candidate)}
+            className="h-8 rounded-xl text-xs"
+          >
+            <UserRound className="size-3.5" />
+            Candidate
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => handleDemoLogin(demoAccounts.recruiter)}
+            className="h-8 rounded-xl text-xs"
+          >
+            <UsersRound className="size-3.5" />
+            Recruiter
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => handleDemoLogin(demoAccounts.admin)}
+            className="h-8 rounded-xl text-xs"
+          >
+            <UserRound className="size-3.5" />
+            Admin
+          </Button>
+        </div>
       </div>
 
       <form
@@ -139,7 +214,7 @@ const LoginForm = () => {
                     {isInvalid ? (
                       <FieldError errors={field.state.meta.errors} />
                     ) : (
-                      <span className=" text-sm text-muted-foreground">
+                      <span className="text-sm text-muted-foreground">
                         Enter your valid email address.
                       </span>
                     )}
@@ -224,7 +299,6 @@ const LoginForm = () => {
             >
               {loginPending ? (
                 <>
-                  {" "}
                   <Spinner /> Signing...
                 </>
               ) : (
@@ -234,7 +308,6 @@ const LoginForm = () => {
           </Field>
 
           {/* Google — Candidate only */}
-
           <FieldSeparator>Or continue with</FieldSeparator>
 
           <Field>

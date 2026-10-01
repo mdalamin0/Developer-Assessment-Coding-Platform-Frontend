@@ -74,7 +74,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* RIGHT SIDE — LOGIN FORM */}
-                <div className="flex min-h-[750px] items-center p-6 pt-10 sm:p-8 lg:p-10">
+                <div className="flex min-h-[850px] items-center p-6 pt-10 sm:p-8 lg:p-10">
                   <LoginForm />
                 </div>
               </div>
