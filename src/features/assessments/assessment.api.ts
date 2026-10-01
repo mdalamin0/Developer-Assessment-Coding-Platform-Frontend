@@ -33,6 +33,10 @@ export const getSingleAssessment = (id: string) => {
   return apiClient(`/assessments/${id}`);
 };
 
+export const getCandidateSingleAssessment = (id: string) => {
+  return apiClient(`/assessments/candidate/${id}`);
+};
+
 export const addProblemInAssessment = (
   assessmentId: string,
   payload: addProblemInAssessmentPayload,

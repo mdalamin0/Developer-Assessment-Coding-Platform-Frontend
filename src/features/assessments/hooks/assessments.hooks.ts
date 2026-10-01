@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   addProblemInAssessment,
   createAssessment,
+  getCandidateSingleAssessment,
   getRecruiterAssessments,
   getSingleAssessment,
   handlePaymentAssessment,
@@ -45,6 +46,14 @@ export const useGetSingleAssessment = (id: string) => {
   return useQuery({
     queryKey: ["assessment", id],
     queryFn: () => getSingleAssessment(id),
+  });
+};
+
+export const useGetCandidateSingleAssessment = (id: string) => {
+  return useQuery({
+    queryKey: ["candidate-assessment", id],
+    queryFn: () => getCandidateSingleAssessment(id),
+    retry: false,
   });
 };
 

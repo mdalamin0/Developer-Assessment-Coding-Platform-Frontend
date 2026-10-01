@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import StatusBadge from "@/components/shared/dashboard/status-badge";
 
 import type { RecruiterPayment } from "../payment.types";
+import { useRetryPayment } from "../hooks/payment.hooks";
 
 interface RecruiterPaymentTableProps {
   payments: RecruiterPayment[];
@@ -39,6 +40,23 @@ const getStatusVariant = (status: RecruiterPayment["status"]) => {
 };
 
 const RecruiterPaymentTable = ({ payments }: RecruiterPaymentTableProps) => {
+  const retryPaymentMutation = useRetryPayment();
+
+  const handleRetryPayment = (assessmentId: string) => {
+    retryPaymentMutation.mutate(assessmentId, {
+      onSuccess: (response) => {
+        if (response?.data?.paymentUrl) {
+          window.location.href = response.data.paymentUrl;
+        }
+      },
+      onError: (error) => {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to retry payment.",
+        );
+      },
+    });
+  };
+
   const handleCopyTransaction = async (transactionId: string) => {
     try {
       await navigator.clipboard.writeText(transactionId);
@@ -62,6 +80,7 @@ const RecruiterPaymentTable = ({ payments }: RecruiterPaymentTableProps) => {
                 <TableHead>Method</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Paid At</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -126,6 +145,23 @@ const RecruiterPaymentTable = ({ payments }: RecruiterPaymentTableProps) => {
                     {payment.paidAt
                       ? format(new Date(payment.paidAt), "MMM d, yyyy • h:mm a")
                       : "—"}
+                  </TableCell>
+                  <TableCell>
+                    {payment.status === "FAILED" ||
+                    payment.status === "CANCELLED" ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleRetryPayment(payment.assessmentId)}
+                        disabled={retryPaymentMutation.isPending}
+                        className="gap-1.5"
+                      >
+                        Retry Payment
+                      </Button>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -211,6 +247,18 @@ const RecruiterPaymentTable = ({ payments }: RecruiterPaymentTableProps) => {
                     : "—"}
                 </span>
               </div>
+              {(payment.status === "FAILED" ||
+                payment.status === "CANCELLED") && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-4 w-full gap-1.5"
+                  onClick={() => handleRetryPayment(payment.assessmentId)}
+                  disabled={retryPaymentMutation.isPending}
+                >
+                  Retry Payment
+                </Button>
+              )}
             </div>
           </div>
         ))}

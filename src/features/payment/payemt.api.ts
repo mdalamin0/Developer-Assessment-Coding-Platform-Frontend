@@ -10,3 +10,12 @@ export const getRecruiterPayments = (
     params,
   });
 };
+
+export const retryPayment = (assessmentId: string) => {
+  return apiClient("/payment/retry-payment", {
+    method: "POST",
+    body: {
+      assessmentId,
+    },
+  });
+};

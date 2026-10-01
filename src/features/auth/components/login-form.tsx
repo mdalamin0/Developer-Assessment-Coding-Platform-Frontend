@@ -37,10 +37,10 @@ const LoginForm = () => {
 
   const form = useForm({
     defaultValues: {
-      // email: "sumaiya84857@gmail.com",
-      // password: "Candidate@123",
-      email: "testeradmin@gmail.com",
-      password: "Tester@admin12345",
+      email: "sumaiya84857@gmail.com",
+      password: "Candidate@123",
+      // email: "testeradmin@gmail.com",
+      // password: "Tester@admin12345",
     },
 
     validators: {
@@ -205,7 +205,7 @@ const LoginForm = () => {
                       <FieldError errors={field.state.meta.errors} />
                     ) : (
                       <span className="text-sm text-muted-foreground">
-                        Must contain at least 8 characters.
+                        Please provide your valid password.
                       </span>
                     )}
                   </div>

@@ -1,3 +1,6 @@
+"use client";
+
+import { useMemo } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -11,8 +14,57 @@ import SectionHeader from "@/components/shared/dashboard/section-header";
 import StatsCard from "@/components/shared/dashboard/stats-card";
 import { Button } from "@/components/ui/button";
 import { candidateRoutes } from "@/routes/candidate.routes";
+import { useGetCandidateInvitations } from "@/features/invitations/hooks/invitation.hooks";
+import { useGetMyResults } from "@/features/results/hooks/results.hooks";
+import { InvitationData } from "@/features/invitations/invitation.types";
+import { CandidateResult } from "@/features/results/results.types";
+
 
 const CandidateDashboard = () => {
+  const { data: invitationsData, isLoading: invitationsLoading } =
+    useGetCandidateInvitations({});
+
+  const { data: resultsData, isLoading: resultsLoading } = useGetMyResults({});
+
+  const invitations: InvitationData[] = invitationsData?.data?.data ?? [];
+
+  const results: CandidateResult[] = resultsData?.data?.data ?? [];
+
+  const recentInvitations = useMemo(
+    () => invitations.slice(0, 2),
+    [invitations],
+  );
+
+  const recentResults = useMemo(() => results.slice(0, 2), [results]);
+
+  const getInvitationStatus = (status: InvitationData["status"]) => {
+    if (status === "PENDING") {
+      return {
+        label: "Pending",
+        className: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+      };
+    }
+
+    if (status === "ACCEPTED") {
+      return {
+        label: "Accepted",
+        className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+      };
+    }
+
+    if (status === "DECLINED") {
+      return {
+        label: "Declined",
+        className: "bg-destructive/10 text-destructive",
+      };
+    }
+
+    return {
+      label: "Expired",
+      className: "bg-muted text-muted-foreground",
+    };
+  };
+
   return (
     <div className="page-section">
       <div className="container-app space-y-8">
@@ -29,7 +81,7 @@ const CandidateDashboard = () => {
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <StatsCard
             title="Total Assessments"
-            value={12}
+            value={invitations.length}
             description="Available to you"
             icon={ClipboardCheck}
             iconWrapperClassName="bg-indigo-500/10 text-indigo-500"
@@ -37,7 +89,7 @@ const CandidateDashboard = () => {
 
           <StatsCard
             title="Completed"
-            value={8}
+            value={results.length}
             description="Assessments completed"
             icon={CheckCircle2}
             iconWrapperClassName="bg-emerald-500/10 text-emerald-500"
@@ -45,24 +97,33 @@ const CandidateDashboard = () => {
 
           <StatsCard
             title="Average Score"
-            value="84%"
+            value={
+              results.length
+                ? `${Math.round(
+                    results.reduce(
+                      (total, result) => total + Number(result.totalScore),
+                      0,
+                    ) / results.length,
+                  )}%`
+                : "0%"
+            }
             description="Across evaluated attempts"
             icon={BarChart3}
             iconWrapperClassName="bg-violet-500/10 text-violet-500"
           />
         </div>
 
-        {/* Continue Assessment */}
+        {/* Recent Assessments */}
         <section className="space-y-4">
           <SectionHeader
-            title="Continue Assessment"
-            description="Pick up where you left off."
+            title="Recent Assessments"
+            description="Assessments you've been invited to."
             action={
               <Button
                 variant="outline"
                 size="sm"
                 nativeButton={false}
-                render={<Link href="candidate/assessmets" />}
+                render={<Link href={'/candidate/assessments'} />}
                 className="gap-1.5"
               >
                 View all
@@ -71,57 +132,91 @@ const CandidateDashboard = () => {
             }
           />
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            {/* Assessment Card */}
-            <div className="group rounded-2xl border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex min-w-0 items-start gap-3">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500">
-                    <ClipboardCheck className="size-5" strokeWidth={1.8} />
-                  </div>
-
-                  <div className="min-w-0">
-                    <h3 className="truncate font-semibold">
-                      Full Stack Developer Assessment
-                    </h3>
-
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      React, Node.js & PostgreSQL
-                    </p>
-                  </div>
-                </div>
-
-                <span className="shrink-0 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-600 dark:text-amber-400">
-                  In Progress
-                </span>
-              </div>
-
-              <div className="mt-5 flex items-center gap-4 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <Clock3 className="size-3.5" />
-                  45 min
-                </span>
-
-                <span>6 / 10 questions</span>
-              </div>
-
-              <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-muted">
-                <div className="h-full w-[60%] rounded-full bg-primary" />
-              </div>
-
-              <div className="mt-5 flex justify-end">
-                <Button
-                  size="sm"
-                  nativeButton={false}
-                  render={<Link href="/candidate/attempts/demo" />}
-                  className="gap-1.5"
-                >
-                  Continue
-                  <ArrowRight className="size-3.5" />
-                </Button>
-              </div>
+          {invitationsLoading ? (
+            <div className="grid gap-4 lg:grid-cols-2">
+              {[1, 2].map((item) => (
+                <div
+                  key={item}
+                  className="h-48 animate-pulse rounded-2xl border bg-muted/40"
+                />
+              ))}
             </div>
-          </div>
+          ) : recentInvitations.length === 0 ? (
+            <div className="rounded-2xl border bg-card p-8 text-center">
+              <ClipboardCheck className="mx-auto size-8 text-muted-foreground" />
+              <h3 className="mt-3 font-semibold">No assessments yet</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Your assigned assessments will appear here.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4 lg:grid-cols-2">
+              {recentInvitations.map((invitation) => {
+                const status = getInvitationStatus(invitation.status);
+
+                return (
+                  <div
+                    key={invitation.id}
+                    className="group rounded-2xl border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex min-w-0 items-start gap-3">
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500">
+                          <ClipboardCheck
+                            className="size-5"
+                            strokeWidth={1.8}
+                          />
+                        </div>
+
+                        <div className="min-w-0">
+                          <h3 className="truncate font-semibold">
+                            {invitation.assessment.title}
+                          </h3>
+
+                          <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">
+                            {invitation.assessment.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${status.className}`}
+                      >
+                        {status.label}
+                      </span>
+                    </div>
+
+                    <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1.5">
+                        <Clock3 className="size-3.5" />
+                        {invitation.assessment.duration} min
+                      </span>
+
+                      <span>{invitation.assessment.totalMarks} marks</span>
+
+                      <span>Pass: {invitation.assessment.passingMarks}</span>
+                    </div>
+
+                    <div className="mt-5 flex justify-end">
+                      <Button
+                        size="sm"
+                        nativeButton={false}
+                        render={
+                          <Link
+                            href={`/candidate/assessments/${invitation?.assessment.id}`}
+                          />
+                        }
+                        className="gap-1.5"
+                      >
+                        View assessment
+                        <ArrowRight className="size-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </section>
 
         {/* Recent Results */}
@@ -134,7 +229,7 @@ const CandidateDashboard = () => {
                 variant="outline"
                 size="sm"
                 nativeButton={false}
-                render={<Link href="/candidate/results" />}
+                render={<Link href={"/candidate/results"} />}
                 className="gap-1.5"
               >
                 View all
@@ -143,61 +238,58 @@ const CandidateDashboard = () => {
             }
           />
 
-          <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-            <div className="divide-y">
-              <div className="flex items-center justify-between gap-4 p-5">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
-                    <CheckCircle2 className="size-5" strokeWidth={1.8} />
-                  </div>
-
-                  <div className="min-w-0">
-                    <h3 className="truncate text-sm font-semibold">
-                      Backend Engineering Assessment
-                    </h3>
-
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Completed recently
-                    </p>
-                  </div>
-                </div>
-
-                <div className="shrink-0 text-right">
-                  <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                    92%
-                  </p>
-
-                  <p className="text-xs text-muted-foreground">Score</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between gap-4 p-5">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-500">
-                    <BarChart3 className="size-5" strokeWidth={1.8} />
-                  </div>
-
-                  <div className="min-w-0">
-                    <h3 className="truncate text-sm font-semibold">
-                      JavaScript Fundamentals
-                    </h3>
-
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Completed recently
-                    </p>
-                  </div>
-                </div>
-
-                <div className="shrink-0 text-right">
-                  <p className="text-lg font-bold text-violet-600 dark:text-violet-400">
-                    86%
-                  </p>
-
-                  <p className="text-xs text-muted-foreground">Score</p>
-                </div>
+          {resultsLoading ? (
+            <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+              <div className="divide-y">
+                {[1, 2].map((item) => (
+                  <div key={item} className="h-20 animate-pulse bg-muted/40" />
+                ))}
               </div>
             </div>
-          </div>
+          ) : recentResults.length === 0 ? (
+            <div className="rounded-2xl border bg-card p-8 text-center">
+              <BarChart3 className="mx-auto size-8 text-muted-foreground" />
+              <h3 className="mt-3 font-semibold">No results yet</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Your completed assessment results will appear here.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+              <div className="divide-y">
+                {recentResults.map((result) => (
+                  <div
+                    key={result.id}
+                    className="flex items-center justify-between gap-4 p-5"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
+                        <CheckCircle2 className="size-5" strokeWidth={1.8} />
+                      </div>
+
+                      <div className="min-w-0">
+                        <h3 className="truncate text-sm font-semibold">
+                          {result?.attempt?.assessment?.title}
+                        </h3>
+
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Assessment result
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0 text-right">
+                      <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                        {result.totalScore}%
+                      </p>
+
+                      <p className="text-xs text-muted-foreground">Score</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       </div>
     </div>
