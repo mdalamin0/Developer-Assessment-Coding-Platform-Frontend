@@ -3,6 +3,7 @@ import SectionHeader from "@/components/shared/dashboard/section-header";
 import StatsCard from "@/components/shared/dashboard/stats-card";
 import { Button } from "@/components/ui/button";
 import { AdminUser, AuditLog } from "@/features/admin/admin.types";
+import RecentLogsSkeleton from "@/features/admin/components/recent-logs-skeleton";
 import {
   useGetAdminUsers,
   useGetAllAssessments,
@@ -33,7 +34,7 @@ const AdminDashboard = () => {
     (user: AdminUser) => user.status === "ACTIVE",
   );
 
-const {data: auditLogs} = useGetAuditLogs({sortOrder: "desc"})
+const {data: auditLogs, isLoading: isAuditLogsLoading} = useGetAuditLogs({sortOrder: "desc"})
 const recentLogs = auditLogs?.data?.data?.slice(0, 3) ?? [];
 
 
@@ -96,7 +97,7 @@ const recentLogs = auditLogs?.data?.data?.slice(0, 3) ?? [];
 
           <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
             <div className="divide-y">
-              {recentLogs.map((log: AuditLog) => (
+              { isAuditLogsLoading ? <RecentLogsSkeleton/> : recentLogs.map((log: AuditLog) => (
                 <div
                   key={log.id}
                   className="flex items-center justify-between gap-4 p-5"

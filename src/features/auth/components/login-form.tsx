@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { loginSchema } from "../auth.schema";
-import { useLogin } from "../hooks";
+import { useGetMe, useLogin } from "../hooks";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -52,6 +52,7 @@ const LoginForm = () => {
   const router = useRouter();
   const { mutate: login, isPending: loginPending } = useLogin();
   const searchParams = useSearchParams();
+  const { refetch: refetchUser } = useGetMe();
 
   const form = useForm({
     defaultValues: {
@@ -70,7 +71,7 @@ const LoginForm = () => {
       };
 
       login(loginData, {
-        onSuccess: (res) => {
+        onSuccess: async (res) => {
           if (!res.success) {
             toast.error(
               res.message || "Authentication failed. Please try again.",
@@ -78,7 +79,32 @@ const LoginForm = () => {
             return;
           }
 
+          const { data: meResponse } = await refetchUser();
+
+          if (!meResponse?.success || !meResponse.data) {
+            toast.error("Unable to load your account information.");
+            return;
+          }
+
+          const user = meResponse.data;
+
           toast.success(res.message || "Logged in successfully!");
+
+          if (user.role === "CANDIDATE") {
+            router.push("/candidate");
+            return;
+          }
+
+          if (user.role === "RECRUITER") {
+            router.push("/recruiter");
+            return;
+          }
+
+          if (user.role === "ADMIN") {
+            router.push("/admin");
+            return;
+          }
+
           router.push("/");
         },
 

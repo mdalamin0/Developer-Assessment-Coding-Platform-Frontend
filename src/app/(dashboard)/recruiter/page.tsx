@@ -22,7 +22,7 @@ const RecruiterDashboard = () => {
   const { data } = useGetRecruiterDashboardStats();
   const stats = data?.data ?? [];
 
-  const { data: assessments } = useGetRecruiterAssessments({
+  const { data: assessments, isLoading: isAssessmentsLoading } = useGetRecruiterAssessments({
     sortOrder: "desc",
   });
 
@@ -88,7 +88,16 @@ const RecruiterDashboard = () => {
           />
 
           <div className="grid min-w-0 gap-4 lg:grid-cols-2">
-            {assessments?.data?.data
+            { isAssessmentsLoading ?  (
+            <div className="grid min-w-0 gap-4 lg:grid-cols-2">
+              {[1, 2].map((item) => (
+                <div
+                  key={item}
+                  className="h-48 min-w-0 animate-pulse rounded-2xl border bg-muted/40"
+                />
+              ))}
+            </div>
+          )  :  assessments?.data?.data
               ?.slice(0, 2)
               .map((assessment: ProblemDataType) => (
                 <div

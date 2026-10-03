@@ -26,17 +26,17 @@ export const useResendVerificationCode = () => {
   })
 }
 
-export function useLogout() {
+export const useLogout = () => {
   return useMutation({
     mutationFn: userLogout,
   });
 }
 
-export function useGetMe() {
+export const  useGetMe = () => {
   return useQuery({
     queryKey: ["user"],
     queryFn: getMe,
-    retry: false,
+    retry: 2,
   });
 }
 
